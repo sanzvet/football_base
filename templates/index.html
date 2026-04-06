@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Predictor Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --success: #10B981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-secondary: #6B7280;
+            --text-gray: #9CA3AF;
+            --text-green: #059669;
+            --border: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); padding: 24px; line-height: 1.5; }
+
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 32px; padding: 0 8px; 
+        }
+        .header h1 { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        .header h1 span { color: var(--primary); }
+
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px; 
+            font-size: 14px; font-weight: 500; cursor: pointer; 
+            transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: var(--shadow);
+        }
+        .btn-update { 
+            background: linear-gradient(135deg, var(--success), #059669); 
+            color: white; 
+        }
+        .btn-update:hover { 
+            transform: translateY(-1px); 
+            box-shadow: var(--shadow-hover);
+        }
+        .btn:active { transform: translateY(0); }
+
+        .selection-block { 
+            background: var(--card-bg); padding: 24px; border-radius: 12px; 
+            box-shadow: var(--shadow); margin-bottom: 24px; 
+            border: 1px solid var(--border);
+        }
+        .selection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .select-group label { 
+            display: block; margin-bottom: 8px; color: var(--text-secondary); 
+            font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; 
+        }
+        .select-group select { 
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border); 
+            border-radius: 8px; font-size: 14px; background: #FAFAFA; color: var(--text-main);
+            transition: all 0.2s; cursor: pointer;
+        }
+        .select-group select:hover { border-color: var(--primary); background: #fff; }
+        .select-group select:focus { 
+            outline: none; border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        }
+
+        .pred-block { 
+            background: var(--card-bg); padding: 24px; border-radius: 12px; 
+            box-shadow: var(--shadow); margin-bottom: 24px; 
+            border: 1px solid var(--border);
+        }
+        .pred-block h3 { 
+            color: var(--text-main); margin-bottom: 20px; padding-bottom: 12px; 
+            border-bottom: 2px solid var(--border); font-size: 16px; font-weight: 600;
+        }
+
+        .outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .outcome-card { 
+            text-align: center; padding: 24px; background: #FAFAFA; 
+            border-radius: 10px; border: 1px solid var(--border);
+            transition: all 0.2s; position: relative; overflow: hidden;
+        }
+        .outcome-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        
+        .outcome-card.home { border-top: 4px solid var(--info); }
+        .outcome-card.draw { border-top: 4px solid var(--warning); }
+        .outcome-card.away { border-top: 4px solid var(--danger); }
+
+        .outcome-card .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500; }
+        .outcome-card .value { font-size: 34px; font-weight: 700; margin-bottom: 8px; transition: color 0.2s; }
+        .outcome-card .odd { 
+            font-size: 13px; color: var(--text-secondary); background: #fff; 
+            padding: 6px 14px; border-radius: 20px; display: inline-block; 
+            border: 1px solid var(--border); font-weight: 600;
+        }
+
+        /* === ЦВЕТОВЫЕ КЛАССЫ ДЛЯ ВЕРОЯТНОСТЕЙ === */
+        .prob-high { 
+            color: #059669 !important; 
+            font-weight: 700 !important; 
+        }
+        .prob-normal { 
+            color: #6B7280 !important; 
+        }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        .goals-table, .betting-table { width: 100%; border-collapse: collapse; }
+        .goals-table th, .goals-table td, .betting-table th, .betting-table td { 
+            padding: 14px 12px; text-align: center; border-bottom: 1px solid var(--border); 
+        }
+        .goals-table th, .betting-table th { 
+            background: #FAFAFA; color: var(--text-secondary); font-size: 12px; 
+            text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; 
+        }
+        .goals-table td, .betting-table td { font-size: 14px; color: var(--text-main); transition: color 0.2s; }
+        .goals-table tr:last-child td, .betting-table tr:last-child td { border-bottom: none; }
+        .goals-table tr:hover td, .betting-table tr:hover td { background: #F9FAFB; }
+        
+        .goals-table td.prob-high,
+        .betting-table td.prob-high {
+            color: #059669 !important;
+            font-weight: 700 !important;
+        }
+
+        .goals-table td.prob-normal,
+        .betting-table td.prob-normal {
+            color: #6B7280 !important;
+        }
+        .fair-odd { 
+            color: var(--success); font-weight: 700; background: var(--success-bg); 
+            padding: 4px 10px; border-radius: 6px; 
+        }
+        
+        .team-home { color: var(--info); font-weight: 600; }
+        .team-away { color: var(--danger); font-weight: 600; }
+
+        .loading { opacity: 0.6; pointer-events: none; }
+        .spinner { 
+            display: inline-block; width: 16px; height: 16px; 
+            border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; 
+            border-top-color: #fff; animation: spin 0.8s linear infinite; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .selection-grid, .outcome-grid, .two-col { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚽ Football <span>Predictor</span></h1>
+        <button class="btn btn-update" id="btnUpdate" onclick="updateDB()">
+            <span>🔄</span> <span>Обновить БД</span>
+        </button>
+    </div>
+
+    <div class="selection-block">
+        <div class="selection-grid">
+            <div class="select-group">
+                <label>🏆 Лига</label>
+                <select id="league" onchange="loadTeams()">
+                    <option value="">Выберите лигу</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label>🏠 Домашняя команда</label>
+                <select id="home_team" onchange="loadPrediction()">
+                    <option value="">Выберите команду</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label>✈️ Гостевая команда</label>
+                <select id="away_team" onchange="loadPrediction()">
+                    <option value="">Выберите команду</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="pred-block">
+        <h3>📊 Исход Матча (1X2)</h3>
+        <div class="outcome-grid">
+            <div class="outcome-card home">
+                <div class="label">Победа хозяев</div>
+                <div class="value" id="prob_home">--%</div>
+                <div class="odd" id="odd_home">Кэф: --</div>
+            </div>
+            <div class="outcome-card draw">
+                <div class="label">Ничья</div>
+                <div class="value" id="prob_draw">--%</div>
+                <div class="odd" id="odd_draw">Кэф: --</div>
+            </div>
+            <div class="outcome-card away">
+                <div class="label">Победа гостей</div>
+                <div class="value" id="prob_away">--%</div>
+                <div class="odd" id="odd_away">Кэф: --</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="two-col">
+        <div class="pred-block">
+            <h3>⚽ Индивидуальные Голы</h3>
+            <table class="goals-table">
+                <thead>
+                    <tr>
+                        <th>Команда</th>
+                        <th>0 голов</th>
+                        <th>1+ голов</th>
+                        <th>2+ голов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="team-home">Домашняя</td>
+                        <td id="home_0">--%</td>
+                        <td id="home_1plus">--%</td>
+                        <td id="home_2plus">--%</td>
+                    </tr>
+                    <tr>
+                        <td class="team-away">Гостевая</td>
+                        <td id="away_0">--%</td>
+                        <td id="away_1plus">--%</td>
+                        <td id="away_2plus">--%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pred-block">
+            <h3>💰 Ставки</h3>
+            <table class="betting-table">
+                <thead>
+                    <tr>
+                        <th>Рынок</th>
+                        <th>Вероятность</th>
+                        <th>Справедливый Кэф</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ТБ 2.5</td>
+                        <td id="over25_prob">--%</td>
+                        <td><span class="fair-odd" id="over25_odd">--</span></td>
+                    </tr>
+                    <tr>
+                        <td>Обе забьют (BTTS)</td>
+                        <td id="btts_prob">--%</td>
+                        <td><span class="fair-odd" id="btts_odd">--</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Пороговые значения для раскраски
+        const THRESHOLD_OUTCOME = 60;   // Для 1X2
+        const THRESHOLD_OTHER = 70;      // Для голов и ставок
+
+        document.addEventListener('DOMContentLoaded', loadLeagues);
+
+        // Вспомогательная функция: применить цвет к элементу
+        function applyColor(elementId, probability, threshold) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            // Убираем старые классы
+            el.classList.remove('prob-high', 'prob-normal');
+            
+            // Применяем новый класс
+            if (probability > threshold) {
+                el.classList.add('prob-high');
+            } else {
+                el.classList.add('prob-normal');
+            }
+        }
+
+        async function loadLeagues() {
+            try {
+                const res = await fetch('/api/leagues');
+                const data = await res.json();
+                const select = document.getElementById('league');
+                select.innerHTML = '<option value="">Выберите лигу</option>';
+                data.leagues.forEach(l => {
+                    select.innerHTML += `<option value="${l}">${l}</option>`;
+                });
+            } catch (e) { console.error('Ошибка загрузки лиг:', e); }
+        }
+
+        async function loadTeams() {
+            const league = document.getElementById('league').value;
+            if (!league) return;
+            
+            try {
+                const res = await fetch(`/api/teams?league=${encodeURIComponent(league)}`);
+                const data = await res.json();
+                
+                const homeSelect = document.getElementById('home_team');
+                const awaySelect = document.getElementById('away_team');
+                
+                homeSelect.innerHTML = '<option value="">Выберите команду</option>';
+                awaySelect.innerHTML = '<option value="">Выберите команду</option>';
+                
+                data.teams.forEach(t => {
+                    homeSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                    awaySelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                });
+            } catch (e) { console.error('Ошибка загрузки команд:', e); }
+        }
+
+        async function loadPrediction() {
+            const home = document.getElementById('home_team').value;
+            const away = document.getElementById('away_team').value;
+            
+            if (!home || !away || home === away) {
+                clearPrediction();
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/predict?home_id=${home}&away_id=${away}`);
+                const data = await res.json();
+                
+                console.log('📊 Получены данные прогноза:', data);
+                
+                // === Исход 1X2 (порог 60%) ===
+                const probHome = data.prob_home * 100;
+                const probDraw = data.prob_draw * 100;
+                const probAway = data.prob_away * 100;
+                
+                document.getElementById('prob_home').textContent = probHome.toFixed(1) + '%';
+                document.getElementById('odd_home').textContent = 'Кэф: ' + data.fair_odd_home.toFixed(2);
+                applyColor('prob_home', probHome, THRESHOLD_OUTCOME);
+                console.log(`✅ prob_home: ${probHome.toFixed(1)}% → ${probHome > THRESHOLD_OUTCOME ? '🟢' : '⚪'}`);
+                
+                document.getElementById('prob_draw').textContent = probDraw.toFixed(1) + '%';
+                document.getElementById('odd_draw').textContent = 'Кэф: ' + data.fair_odd_draw.toFixed(2);
+                applyColor('prob_draw', probDraw, THRESHOLD_OUTCOME);
+                console.log(`✅ prob_draw: ${probDraw.toFixed(1)}% → ${probDraw > THRESHOLD_OUTCOME ? '🟢' : '⚪'}`);
+                
+                document.getElementById('prob_away').textContent = probAway.toFixed(1) + '%';
+                document.getElementById('odd_away').textContent = 'Кэф: ' + data.fair_odd_away.toFixed(2);
+                applyColor('prob_away', probAway, THRESHOLD_OUTCOME);
+                console.log(`✅ prob_away: ${probAway.toFixed(1)}% → ${probAway > THRESHOLD_OUTCOME ? '🟢' : '⚪'}`);
+                
+                // === Индивидуальные голы (порог 70%) ===
+                const goalsData = [
+                    {id: 'home_0', val: data.home_0},
+                    {id: 'home_1plus', val: data.home_1plus},
+                    {id: 'home_2plus', val: data.home_2plus},
+                    {id: 'away_0', val: data.away_0},
+                    {id: 'away_1plus', val: data.away_1plus},
+                    {id: 'away_2plus', val: data.away_2plus}
+                ];
+                
+                goalsData.forEach(item => {
+                    document.getElementById(item.id).textContent = item.val.toFixed(1) + '%';
+                    applyColor(item.id, item.val, THRESHOLD_OTHER);
+                    console.log(`✅ ${item.id}: ${item.val.toFixed(1)}% → ${item.val > THRESHOLD_OTHER ? '🟢' : '⚪'}`);
+                });
+                
+                // === Ставки (порог 70%) ===
+                const over25Prob = data.over25_prob;
+                const bttsProb = data.btts_prob;
+                
+                document.getElementById('over25_prob').textContent = over25Prob.toFixed(1) + '%';
+                document.getElementById('over25_odd').textContent = data.over25_odd.toFixed(2);
+                applyColor('over25_prob', over25Prob, THRESHOLD_OTHER);
+                console.log(`✅ over25_prob: ${over25Prob.toFixed(1)}% → ${over25Prob > THRESHOLD_OTHER ? '🟢' : '⚪'}`);
+                
+                document.getElementById('btts_prob').textContent = bttsProb.toFixed(1) + '%';
+                document.getElementById('btts_odd').textContent = data.btts_odd.toFixed(2);
+                applyColor('btts_prob', bttsProb, THRESHOLD_OTHER);
+                console.log(`✅ btts_prob: ${bttsProb.toFixed(1)}% → ${bttsProb > THRESHOLD_OTHER ? '🟢' : '⚪'}`);
+                
+                console.log('🎨 Все цвета применены!');
+                
+            } catch (e) { 
+                console.error('❌ Ошибка загрузки прогноза:', e); 
+            }
+        }
+
+        function clearPrediction() {
+            const ids = ['prob_home', 'prob_draw', 'prob_away', 'odd_home', 'odd_draw', 'odd_away',
+                         'home_0', 'home_1plus', 'home_2plus', 'away_0', 'away_1plus', 'away_2plus',
+                         'over25_prob', 'over25_odd', 'btts_prob', 'btts_odd'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('prob-high', 'prob-normal');
+                if (el.tagName === 'TD') el.textContent = '--%';
+                else if (el.classList.contains('fair-odd')) el.textContent = '--';
+                else el.textContent = el.id.includes('odd') ? 'Кэф: --' : '--%';
+            });
+        }
+
+        async function updateDB() {
+            const btn = document.getElementById('btnUpdate');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner"></span> <span>Обновление...</span>';
+            btn.classList.add('loading');
+            
+            try {
+                const res = await fetch('/api/update_db', { method: 'POST' });
+                const data = await res.json();
+                alert(data.status === 'success' ? '✅ База обновлена!' : '⚠️ ' + data.message);
+            } catch (e) {
+                alert('❌ Ошибка обновления: ' + e.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.classList.remove('loading');
+            }
+        }
+
+                // === ОТЛАДКА: Проверка применения цветов ===
+        console.log('🎨 Цветовая система загружена');
+        console.log('   THRESHOLD_OUTCOME:', THRESHOLD_OUTCOME);
+        console.log('   THRESHOLD_OTHER:', THRESHOLD_OTHER);
+
+        // Тестовый вызов (для проверки)
+        setTimeout(() => {
+            console.log('🧪 Тест applyColor...');
+            applyColor('prob_home', 75, 60);  // Должен стать зелёным
+            applyColor('prob_draw', 30, 60);  // Должен стать серым
+        }, 2000);
+    </script>
+</body>
+</html>
