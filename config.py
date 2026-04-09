@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     
-    MODEL_PATH: str = "ml_model.pkl"
+    MODEL_PATH: str = "ml/ml_model.pkl"
     LEAGUES: List[str] = ["La_liga", "EPL", "Bundesliga", "Serie_A", "Ligue_1", "RFPL"]
     
     class Config:
