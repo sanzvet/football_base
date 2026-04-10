@@ -216,16 +216,23 @@ class FootballModel:
         # Преобразуем признаки в вектор
         X = np.array([[features.get(col, 0) for col in self.feature_columns]])
         
-        # Предсказания вероятностей 1X2
-        prob_home = self.model_home.predict_proba(X)[0, 1] if self.model_home else 0.33
-        prob_draw = self.model_draw.predict_proba(X)[0, 1] if self.model_draw else 0.33
-        prob_away = self.model_away.predict_proba(X)[0, 1] if self.model_away else 0.33
+        # Предсказания вероятностей 1X2 (сырые)
+        prob_home_raw = self.model_home.predict_proba(X)[0, 1] if self.model_home else 0.33
+        prob_draw_raw = self.model_draw.predict_proba(X)[0, 1] if self.model_draw else 0.33
+        prob_away_raw = self.model_away.predict_proba(X)[0, 1] if self.model_away else 0.33
 
-        # Справедливые коэффициенты для форы 0
+        # Нормализация (сумма = 1)
+        total_raw = prob_home_raw + prob_draw_raw + prob_away_raw
+        if total_raw > 0:
+            prob_home = prob_home_raw / total_raw
+            prob_draw = prob_draw_raw / total_raw
+            prob_away = prob_away_raw / total_raw
+        else:
+            prob_home = prob_draw = prob_away = 1/3
+
+        # Теперь расчёт форы 0 на нормализованных вероятностях
         fair_odd_home_ah0 = (1 - prob_draw) / prob_home if prob_home > 0 else 99.99
         fair_odd_away_ah0 = (1 - prob_draw) / prob_away if prob_away > 0 else 99.99
-
-        # Также можно вычислить вероятности «не проиграть»
         home_ah0_win_or_push = prob_home + prob_draw
         away_ah0_win_or_push = prob_away + prob_draw
         
@@ -233,12 +240,6 @@ class FootballModel:
         xg_home = max(0, self.model_goals_h.predict(X)[0] if self.model_goals_h else 1.5)
         xg_away = max(0, self.model_goals_a.predict(X)[0] if self.model_goals_a else 1.2)
         
-        # Нормализация вероятностей 1X2 (чтобы сумма = 1)
-        total = prob_home + prob_draw + prob_away
-        if total > 0:
-            prob_home /= total
-            prob_draw /= total
-            prob_away /= total
         
         # ========== DIXON-COLES: Расчёт рынков ==========
         dc_markets = self.dixon_coles.calculate_market_probabilities(xg_home, xg_away)
@@ -262,6 +263,13 @@ class FootballModel:
         
         # ========== Точные счёта (Топ-5) ==========
         score_probs = self.dixon_coles.predict_score_probability(xg_home, xg_away)
+        # Вероятность ТБ 1.5 (сумма голов > 1.5)
+        over_15_prob = sum(
+            prob for (g_h, g_a), prob in score_probs.items() 
+            if g_h + g_a > 1.5
+        )
+        fair_odd_over_15 = 1 / over_15_prob if over_15_prob > 0 else 99.99
+
         exact_scores = {
             f"{gh}:{ga}": prob * 100 
             for (gh, ga), prob in sorted(score_probs.items(), key=lambda x: x[1], reverse=True)[:5]
@@ -275,7 +283,8 @@ class FootballModel:
             'fair_odd_home': fair_odd_home,
             'fair_odd_draw': fair_odd_draw,
             'fair_odd_away': fair_odd_away,
-
+            'over15_prob': over_15_prob * 100,
+            'over15_odd': fair_odd_over_15,
             'fair_odd_home_ah0': fair_odd_home_ah0,
             'fair_odd_away_ah0': fair_odd_away_ah0,
             'home_ah0_prob': home_ah0_win_or_push,

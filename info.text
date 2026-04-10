@@ -13,3 +13,22 @@ pip install -r requirements.txt
 
 # Установи браузеры для Playwright (критично для парсера!)
 playwright install
+
+#  Работа с Github
+# Проверьте, связан ли проект с GitHub
+git remote -v
+
+# Посмотрите, какие файлы изменены или созданы
+git status
+
+ # Добавьте изменённые файлы в индекс
+ git add ml/model.py templates/index.html
+
+ # Проверьте, что добавилось именно то, что нужно
+ git status
+
+ # Создайте коммит с осмысленным сообщением
+ git commit -m "Добавлен расчёт и отображение Азиатской форы 0"
+
+ # Отправьте коммит на GitHub
+ git push origin main

@@ -84,32 +84,33 @@
 
         .outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .outcome-card { 
-            text-align: center; padding: 24px; background: #FAFAFA; 
-            border-radius: 10px; border: 1px solid var(--border);
-            transition: all 0.2s; position: relative; overflow: hidden;
+            text-align: center; 
+            padding: 16px 12px;          /* уменьшено с 24px */
+            background: #FAFAFA; 
+            border-radius: 8px;           /* немного скругления */
+            border: 1px solid var(--border);
+            transition: all 0.2s; 
+            position: relative; 
+            overflow: hidden;
         }
-        .outcome-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        .outcome-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
         
         .outcome-card.home { border-top: 4px solid var(--info); }
         .outcome-card.draw { border-top: 4px solid var(--warning); }
         .outcome-card.away { border-top: 4px solid var(--danger); }
+        .outcome-card.ah0 { border-top: 4px solid var(--primary); }  /* для форы 0 */
 
-        .outcome-card .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500; }
-        .outcome-card .value { font-size: 34px; font-weight: 700; margin-bottom: 8px; transition: color 0.2s; }
+        .outcome-card .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.3px; }
+        .outcome-card .value { font-size: 26px; font-weight: 700; margin-bottom: 6px; transition: color 0.2s; line-height: 1.2; }
         .outcome-card .odd { 
-            font-size: 13px; color: var(--text-secondary); background: #fff; 
-            padding: 6px 14px; border-radius: 20px; display: inline-block; 
+            font-size: 12px; color: var(--text-secondary); background: #fff; 
+            padding: 4px 12px; border-radius: 20px; display: inline-block; 
             border: 1px solid var(--border); font-weight: 600;
         }
 
-        /* === ЦВЕТОВЫЕ КЛАССЫ ДЛЯ ВЕРОЯТНОСТЕЙ === */
-        .prob-high { 
-            color: #059669 !important; 
-            font-weight: 700 !important; 
-        }
-        .prob-normal { 
-            color: #6B7280 !important; 
-        }
+        /* ЦВЕТОВЫЕ КЛАССЫ ДЛЯ ВЕРОЯТНОСТЕЙ */
+        .prob-high { color: #059669 !important; font-weight: 700 !important; }
+        .prob-normal { color: #6B7280 !important; }
 
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         
@@ -139,7 +140,23 @@
             color: var(--success); font-weight: 700; background: var(--success-bg); 
             padding: 4px 10px; border-radius: 6px; 
         }
-        
+
+        /* Фиксированная ширина колонок для таблиц */
+        .goals-table th:nth-child(1),
+        .betting-table th:nth-child(1) {
+            width: 40%;
+        }
+
+        .goals-table th:nth-child(2),
+        .betting-table th:nth-child(2) {
+            width: 30%;
+        }
+
+        .goals-table th:nth-child(3),
+        .betting-table th:nth-child(3) {
+            width: 30%;
+        }
+
         .team-home { color: var(--info); font-weight: 600; }
         .team-away { color: var(--danger); font-weight: 600; }
 
@@ -154,38 +171,6 @@
         @media (max-width: 768px) {
             .selection-grid, .outcome-grid, .two-col { grid-template-columns: 1fr; }
             .header { flex-direction: column; gap: 16px; align-items: flex-start; }
-        }
-
-                /* Фиксированная ширина колонок для таблиц */
-        .goals-table th:nth-child(1),
-        .betting-table th:nth-child(1) {
-            width: 40%;  /* Первая колонка (Команда / Рынок) */
-        }
-
-        .goals-table th:nth-child(2),
-        .betting-table th:nth-child(2) {
-            width: 30%;  /* Вторая колонка (Вероятность) */
-        }
-
-        .goals-table th:nth-child(3),
-        .betting-table th:nth-child(3) {
-            width: 30%;  /* Третья колонка (Справедливый Кэф) */
-        }
-
-        /* Фиксированная ширина колонок для таблиц */
-        .goals-table th:nth-child(1),
-        .betting-table th:nth-child(1) {
-            width: 40%;  /* Первая колонка (Команда / Рынок) */
-        }
-
-        .goals-table th:nth-child(2),
-        .betting-table th:nth-child(2) {
-            width: 30%;  /* Вторая колонка (Вероятность) */
-        }
-
-        .goals-table th:nth-child(3),
-        .betting-table th:nth-child(3) {
-            width: 30%;  /* Третья колонка (Справедливый Кэф) */
         }
     </style>
 </head>
@@ -220,6 +205,7 @@
         </div>
     </div>
 
+    <!-- Исход Матча (1X2) -->
     <div class="pred-block">
         <h3>📊 Исход Матча (1X2)</h3>
         <div class="outcome-grid">
@@ -241,6 +227,24 @@
         </div>
     </div>
 
+    <!-- Азиатская фора 0 -->
+    <div class="pred-block">
+        <h3>🔄 Азиатская фора 0</h3>
+        <div class="outcome-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="outcome-card ah0">
+                <div class="label">Хозяева (0)</div>
+                <div class="value" id="home_ah0_prob">--%</div>
+                <div class="odd" id="home_ah0_odd">Кэф: --</div>
+            </div>
+            <div class="outcome-card ah0">
+                <div class="label">Гости (0)</div>
+                <div class="value" id="away_ah0_prob">--%</div>
+                <div class="odd" id="away_ah0_odd">Кэф: --</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индивидуальные Голы и Ставки -->
     <div class="two-col">
         <div class="pred-block">
             <h3>⚽ Индивидуальные Голы</h3>
@@ -248,8 +252,8 @@
                 <thead>
                     <tr>
                         <th>КОМАНДА</th>
-                        <th>> 0,5</th>
-                        <th>> 1,5</th>
+                        <th>ИТБ 0,5</th>
+                        <th>ИТБ 1,5</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -279,6 +283,11 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td>ТБ 1.5</td>
+                        <td id="over15_prob">--%</td>
+                        <td><span class="fair-odd" id="over15_odd">--</span></td>
+                    </tr>
+                    <tr>
                         <td>ТБ 2.5</td>
                         <td id="over25_prob">--%</td>
                         <td><span class="fair-odd" id="over25_odd">--</span></td>
@@ -293,9 +302,10 @@
         </div>
     </div>
 
+    
     <script>
         // Пороговые значения для раскраски
-        const THRESHOLD_OUTCOME = 60;   // Для 1X2
+        const THRESHOLD_OUTCOME = 60;   // Для 1X2 и форы 0
         const THRESHOLD_OTHER = 70;      // Для голов и ставок
 
         document.addEventListener('DOMContentLoaded', loadLeagues);
@@ -304,11 +314,7 @@
         function applyColor(elementId, probability, threshold) {
             const el = document.getElementById(elementId);
             if (!el) return;
-            
-            // Убираем старые классы
             el.classList.remove('prob-high', 'prob-normal');
-            
-            // Применяем новый класс
             if (probability > threshold) {
                 el.classList.add('prob-high');
             } else {
@@ -365,7 +371,7 @@
                 
                 console.log('📊 Получены данные прогноза:', data);
                 
-                // === Исход 1X2 (порог 60%) ===
+                // === Исход 1X2 ===
                 const probHome = data.prob_home * 100;
                 const probDraw = data.prob_draw * 100;
                 const probAway = data.prob_away * 100;
@@ -382,8 +388,21 @@
                 document.getElementById('odd_away').textContent = 'Кэф: ' + data.fair_odd_away.toFixed(2);
                 applyColor('prob_away', probAway, THRESHOLD_OUTCOME);
                 
-                // === Индивидуальные голы (порог 70%) ===
-                // Исправлено: используем ключи из ML-модели
+                // === Азиатская фора 0 ===
+                if (data.home_ah0_prob !== undefined) {
+                    const homeAh0Prob = data.home_ah0_prob * 100;
+                    const awayAh0Prob = data.away_ah0_prob * 100;
+                    
+                    document.getElementById('home_ah0_prob').textContent = homeAh0Prob.toFixed(1) + '%';
+                    document.getElementById('home_ah0_odd').textContent = 'Кэф: ' + data.fair_odd_home_ah0.toFixed(2);
+                    applyColor('home_ah0_prob', homeAh0Prob, THRESHOLD_OUTCOME);
+                    
+                    document.getElementById('away_ah0_prob').textContent = awayAh0Prob.toFixed(1) + '%';
+                    document.getElementById('away_ah0_odd').textContent = 'Кэф: ' + data.fair_odd_away_ah0.toFixed(2);
+                    applyColor('away_ah0_prob', awayAh0Prob, THRESHOLD_OUTCOME);
+                }
+                
+                // === Индивидуальные голы ===
                 const goalsData = [
                     {id: 'home_over_05', val: data.home_over_05},
                     {id: 'home_over_15', val: data.home_over_15},
@@ -396,7 +415,7 @@
                     applyColor(item.id, item.val, THRESHOLD_OTHER);
                 });
                 
-                // === Ставки (порог 70%) ===
+                // === Ставки ===
                 const over25Prob = data.over25_prob;
                 const bttsProb = data.btts_prob;
                 
@@ -407,6 +426,10 @@
                 document.getElementById('btts_prob').textContent = bttsProb.toFixed(1) + '%';
                 document.getElementById('btts_odd').textContent = data.btts_odd.toFixed(2);
                 applyColor('btts_prob', bttsProb, THRESHOLD_OTHER);
+
+                document.getElementById('over15_prob').textContent = data.over15_prob.toFixed(1) + '%';
+                document.getElementById('over15_odd').textContent = data.over15_odd.toFixed(2);
+                applyColor('over15_prob', data.over15_prob, THRESHOLD_OTHER);
                 
                 console.log('🎨 Все цвета применены!');
                 
@@ -416,11 +439,12 @@
         }
 
         function clearPrediction() {
-            // Исправлено: правильные ID для сброса
             const ids = [
                 'prob_home', 'prob_draw', 'prob_away', 
                 'odd_home', 'odd_draw', 'odd_away',
-                'home_over_05', 'home_over_15', 'away_over_05', 'away_over_15',
+                'home_ah0_prob', 'home_ah0_odd',
+                'away_ah0_prob', 'away_ah0_odd',
+                'home_over_05', 'home_over_15', 'away_over_05', 'away_over_15','over15_prob', 'over15_odd',
                 'over25_prob', 'over25_odd', 'btts_prob', 'btts_odd'
             ];
             
@@ -452,9 +476,6 @@
                 btn.classList.remove('loading');
             }
         }
-
-        // Удалены дублирующиеся обработчики, которые не работали
-        // Теперь всё управляется через loadPrediction при изменении селектов
     </script>
 </body>
 </html>
