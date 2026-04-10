@@ -220,6 +220,14 @@ class FootballModel:
         prob_home = self.model_home.predict_proba(X)[0, 1] if self.model_home else 0.33
         prob_draw = self.model_draw.predict_proba(X)[0, 1] if self.model_draw else 0.33
         prob_away = self.model_away.predict_proba(X)[0, 1] if self.model_away else 0.33
+
+        # Справедливые коэффициенты для форы 0
+        fair_odd_home_ah0 = (1 - prob_draw) / prob_home if prob_home > 0 else 99.99
+        fair_odd_away_ah0 = (1 - prob_draw) / prob_away if prob_away > 0 else 99.99
+
+        # Также можно вычислить вероятности «не проиграть»
+        home_ah0_win_or_push = prob_home + prob_draw
+        away_ah0_win_or_push = prob_away + prob_draw
         
         # Предсказания голов (xG)
         xg_home = max(0, self.model_goals_h.predict(X)[0] if self.model_goals_h else 1.5)
@@ -244,13 +252,13 @@ class FootballModel:
         dc_odds = self.dixon_coles.get_fair_odds(dc_markets)
         
         # ========== Индивидуальные голы (из распределения Пуассона) ==========
-        home_0 = poisson.pmf(0, xg_home) * 100
-        home_1plus = (1 - poisson.pmf(0, xg_home)) * 100
-        home_2plus = (1 - poisson.pmf(0, xg_home) - poisson.pmf(1, xg_home)) * 100
-        
-        away_0 = poisson.pmf(0, xg_away) * 100
-        away_1plus = (1 - poisson.pmf(0, xg_away)) * 100
-        away_2plus = (1 - poisson.pmf(0, xg_away) - poisson.pmf(1, xg_away)) * 100
+        # > 0.5 = хотя бы 1 гол = 1 - P(0)
+        home_over_05 = (1 - poisson.pmf(0, xg_home)) * 100
+        away_over_05 = (1 - poisson.pmf(0, xg_away)) * 100
+
+        # > 1.5 = хотя бы 2 гола = 1 - P(0) - P(1)
+        home_over_15 = (1 - poisson.pmf(0, xg_home) - poisson.pmf(1, xg_home)) * 100
+        away_over_15 = (1 - poisson.pmf(0, xg_away) - poisson.pmf(1, xg_away)) * 100
         
         # ========== Точные счёта (Топ-5) ==========
         score_probs = self.dixon_coles.predict_score_probability(xg_home, xg_away)
@@ -267,18 +275,21 @@ class FootballModel:
             'fair_odd_home': fair_odd_home,
             'fair_odd_draw': fair_odd_draw,
             'fair_odd_away': fair_odd_away,
+
+            'fair_odd_home_ah0': fair_odd_home_ah0,
+            'fair_odd_away_ah0': fair_odd_away_ah0,
+            'home_ah0_prob': home_ah0_win_or_push,
+            'away_ah0_prob': away_ah0_win_or_push,
             
             # === Ожидаемые голы ===
             'xg_home': xg_home,
             'xg_away': xg_away,
             
             # === Индивидуальные голы ===
-            'home_0': home_0,
-            'home_1plus': home_1plus,
-            'home_2plus': home_2plus,
-            'away_0': away_0,
-            'away_1plus': away_1plus,
-            'away_2plus': away_2plus,
+            'home_over_05': home_over_05,
+            'home_over_15': home_over_15,
+            'away_over_05': away_over_05,
+            'away_over_15': away_over_15,
             
             # === Рынки ставок (Dixon-Coles) ===
             'over25_prob': dc_markets['over_2_5'] * 100,
