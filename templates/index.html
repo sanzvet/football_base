@@ -30,31 +30,25 @@
 
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 32px; padding: 0 8px; 
+            margin-bottom: 32px; padding: 0 8px; flex-wrap: wrap; gap: 12px;
         }
         .header h1 { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
         .header h1 span { color: var(--primary); }
+        .header-buttons { display: flex; gap: 8px; align-items: center; }
 
         .btn {
             padding: 10px 20px; border: none; border-radius: 8px; 
             font-size: 14px; font-weight: 500; cursor: pointer; 
             transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow); text-decoration: none;
         }
-        .btn-update { 
-            background: linear-gradient(135deg, var(--success), #059669); 
-            color: white; 
-        }
-        .btn-update:hover { 
-            transform: translateY(-1px); 
-            box-shadow: var(--shadow-hover);
-        }
+        .btn-update { background: linear-gradient(135deg, var(--success), #059669); color: white; }
+        .btn-update:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
         .btn:active { transform: translateY(0); }
 
         .selection-block { 
             background: var(--card-bg); padding: 24px; border-radius: 12px; 
-            box-shadow: var(--shadow); margin-bottom: 24px; 
-            border: 1px solid var(--border);
+            box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border);
         }
         .selection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .select-group label { 
@@ -67,98 +61,104 @@
             transition: all 0.2s; cursor: pointer;
         }
         .select-group select:hover { border-color: var(--primary); background: #fff; }
-        .select-group select:focus { 
-            outline: none; border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
-        }
+        .select-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 
         .pred-block { 
             background: var(--card-bg); padding: 24px; border-radius: 12px; 
-            box-shadow: var(--shadow); margin-bottom: 24px; 
-            border: 1px solid var(--border);
+            box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border);
         }
         .pred-block h3 { 
             color: var(--text-main); margin-bottom: 20px; padding-bottom: 12px; 
             border-bottom: 2px solid var(--border); font-size: 16px; font-weight: 600;
         }
+        .pred-block h3 .model-badge {
+            font-size: 11px; padding: 2px 8px; border-radius: 10px;
+            background: var(--success-bg); color: var(--success);
+            font-weight: 600; margin-left: 8px; vertical-align: middle;
+        }
 
         .outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .outcome-card { 
-            text-align: center; 
-            padding: 16px 12px;          /* уменьшено с 24px */
-            background: #FAFAFA; 
-            border-radius: 8px;           /* немного скругления */
-            border: 1px solid var(--border);
-            transition: all 0.2s; 
-            position: relative; 
-            overflow: hidden;
+            text-align: center; padding: 16px 12px 40px; background: #FAFAFA; 
+            border-radius: 8px; border: 1px solid var(--border);
+            transition: all 0.2s; position: relative; overflow: hidden;
         }
         .outcome-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
-        
         .outcome-card.home { border-top: 4px solid var(--info); }
         .outcome-card.draw { border-top: 4px solid var(--warning); }
         .outcome-card.away { border-top: 4px solid var(--danger); }
-        .outcome-card.ah0 { border-top: 4px solid var(--primary); }  /* для форы 0 */
+        .outcome-card.ah0 { border-top: 4px solid var(--primary); }
 
-        .outcome-card .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.3px; }
-        .outcome-card .value { font-size: 26px; font-weight: 700; margin-bottom: 6px; transition: color 0.2s; line-height: 1.2; }
-        .outcome-card .odd { 
-            font-size: 12px; color: var(--text-secondary); background: #fff; 
-            padding: 4px 12px; border-radius: 20px; display: inline-block; 
-            border: 1px solid var(--border); font-weight: 600;
-        }
+        .outcome-card .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+        .outcome-card .value { font-size: 26px; font-weight: 700; margin-bottom: 6px; line-height: 1.2; }
+        .outcome-card .odd { font-size: 12px; color: var(--text-secondary); background: #fff; padding: 4px 12px; border-radius: 20px; display: inline-block; border: 1px solid var(--border); font-weight: 600; }
 
-        /* ЦВЕТОВЫЕ КЛАССЫ ДЛЯ ВЕРОЯТНОСТЕЙ */
         .prob-high { color: #059669 !important; font-weight: 700 !important; }
         .prob-normal { color: #6B7280 !important; }
 
+        /* ===== VALUE CALCULATOR STYLES ===== */
+        .card-value-row {
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; margin-top: 10px;
+        }
+        .card-value-row label {
+            font-size: 11px; color: var(--text-secondary); font-weight: 600;
+        }
+        .bk-odd-input {
+            width: 64px; padding: 4px 6px; border: 1px solid var(--border);
+            border-radius: 5px; font-size: 12px; text-align: center;
+            background: #fff; color: var(--text-main); font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .bk-odd-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
+        .bk-odd-input::placeholder { color: var(--text-gray); font-size: 10px; }
+
+        .value-badge {
+            font-size: 11px; font-weight: 700; padding: 3px 8px;
+            border-radius: 12px; display: inline-block; min-width: 52px;
+            text-align: center; transition: all 0.25s;
+        }
+        .value-positive { background: rgba(16, 185, 129, 0.15); color: #059669; }
+        .value-warning { background: rgba(245, 158, 11, 0.15); color: #D97706; }
+        .value-negative { background: rgba(239, 68, 68, 0.08); color: #9CA3AF; }
+        .value-empty { background: #F3F4F6; color: var(--text-gray); }
+
+        .card-save-row {
+            position: absolute; bottom: 8px; right: 12px;
+        }
+        /* ===== END VALUE CALCULATOR ===== */
+
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         
-        .goals-table, .betting-table { width: 100%; border-collapse: collapse; }
-        .goals-table th, .goals-table td, .betting-table th, .betting-table td { 
-            padding: 14px 12px; text-align: center; border-bottom: 1px solid var(--border); 
+        .market-table { width: 100%; border-collapse: collapse; }
+        .market-table th, .market-table td { 
+            padding: 12px 8px; text-align: center; border-bottom: 1px solid var(--border); 
+            vertical-align: middle;
         }
-        .goals-table th, .betting-table th { 
-            background: #FAFAFA; color: var(--text-secondary); font-size: 12px; 
+        .market-table th { 
+            background: #FAFAFA; color: var(--text-secondary); font-size: 11px; 
             text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; 
+            white-space: nowrap;
         }
-        .goals-table td, .betting-table td { font-size: 14px; color: var(--text-main); transition: color 0.2s; }
-        .goals-table tr:last-child td, .betting-table tr:last-child td { border-bottom: none; }
-        .goals-table tr:hover td, .betting-table tr:hover td { background: #F9FAFB; }
-        
-        .goals-table td.prob-high,
-        .betting-table td.prob-high {
-            color: #059669 !important;
-            font-weight: 700 !important;
-        }
+        .market-table td { font-size: 13px; color: var(--text-main); transition: color 0.2s; }
+        .market-table tr:last-child td { border-bottom: none; }
+        .market-table tr:hover td { background: #F9FAFB; }
+        .market-table td.prob-high { color: #059669 !important; font-weight: 700 !important; }
+        .market-table td.prob-normal { color: #6B7280 !important; }
 
-        .goals-table td.prob-normal,
-        .betting-table td.prob-normal {
-            color: #6B7280 !important;
-        }
-        .fair-odd { 
-            color: var(--success); font-weight: 700; background: var(--success-bg); 
-            padding: 4px 10px; border-radius: 6px; 
-        }
+        .fair-odd { color: var(--success); font-weight: 700; background: var(--success-bg); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
 
-        /* Фиксированная ширина колонок для таблиц */
-        .goals-table th:nth-child(1),
-        .betting-table th:nth-child(1) {
-            width: 40%;
-        }
+        .market-table th:nth-child(1) { width: 26%; text-align: left; padding-left: 12px; }
+        .market-table th:nth-child(2) { width: 14%; }
+        .market-table th:nth-child(3) { width: 14%; }
+        .market-table th:nth-child(4) { width: 16%; }
+        .market-table th:nth-child(5) { width: 16%; }
+        .market-table th:nth-child(6) { width: 14%; }
 
-        .goals-table th:nth-child(2),
-        .betting-table th:nth-child(2) {
-            width: 30%;
-        }
+        .market-table td:nth-child(1) { text-align: left; padding-left: 12px; font-weight: 600; }
 
-        .goals-table th:nth-child(3),
-        .betting-table th:nth-child(3) {
-            width: 30%;
-        }
-
-        .team-home { color: var(--info); font-weight: 600; }
-        .team-away { color: var(--danger); font-weight: 600; }
+        .team-home { color: var(--info); }
+        .team-away { color: var(--danger); }
 
         .loading { opacity: 0.6; pointer-events: none; }
         .spinner { 
@@ -168,36 +168,69 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        #saveBetModal { transition: opacity 0.2s; }
+        #saveBetModal > div { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+
+        .save-btn {
+            background: none; border: 1px solid var(--primary); color: var(--primary); 
+            padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .save-btn:hover { background: var(--primary); color: white; }
+
+        /* Value legend */
+        .value-legend {
+            display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+            margin-top: 8px; padding: 10px 0 0;
+            border-top: 1px solid var(--border);
+        }
+        .value-legend-item {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 11px; color: var(--text-secondary);
+        }
+        .legend-dot {
+            width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        }
+        .legend-dot.green { background: #059669; }
+        .legend-dot.yellow { background: #D97706; }
+        .legend-dot.red { background: #D1D5DB; }
+
         @media (max-width: 768px) {
             .selection-grid, .outcome-grid, .two-col { grid-template-columns: 1fr; }
             .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+            .market-table { font-size: 12px; }
+            .market-table th, .market-table td { padding: 8px 4px; }
+            .bk-odd-input { width: 54px; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>⚽ Football <span>Predictor</span></h1>
-        <button class="btn btn-update" id="btnUpdate" onclick="updateDB()">
-            <span>🔄</span> <span>Обновить БД</span>
-        </button>
+        <h1>Football <span>Predictor</span> Pro</h1>
+        <div class="header-buttons">
+            <a href="/history" class="btn" style="background: white; color: #4F46E5; border: 1px solid #4F46E5;">История ставок</a>
+            <button class="btn btn-update" id="btnUpdate" onclick="updateDB()">
+                <span>Обновить БД</span>
+            </button>
+        </div>
     </div>
 
     <div class="selection-block">
         <div class="selection-grid">
             <div class="select-group">
-                <label>🏆 Лига</label>
+                <label>Лига</label>
                 <select id="league" onchange="loadTeams()">
                     <option value="">Выберите лигу</option>
                 </select>
             </div>
             <div class="select-group">
-                <label>🏠 Домашняя команда</label>
+                <label>Домашняя команда</label>
                 <select id="home_team" onchange="loadPrediction()">
                     <option value="">Выберите команду</option>
                 </select>
             </div>
             <div class="select-group">
-                <label>✈️ Гостевая команда</label>
+                <label>Гостевая команда</label>
                 <select id="away_team" onchange="loadPrediction()">
                     <option value="">Выберите команду</option>
                 </select>
@@ -207,147 +240,410 @@
 
     <!-- Исход Матча (1X2) -->
     <div class="pred-block">
-        <h3>📊 Исход Матча (1X2)</h3>
+        <h3>Исход Матча (1X2) <span class="model-badge" id="modelBadge">--</span></h3>
         <div class="outcome-grid">
             <div class="outcome-card home">
                 <div class="label">Победа хозяев</div>
                 <div class="value" id="prob_home">--%</div>
                 <div class="odd" id="odd_home">Кэф: --</div>
+                <div class="card-value-row">
+                    <label>БК:</label>
+                    <input type="number" step="0.01" class="bk-odd-input" id="bk_home"
+                           placeholder="Кэф" oninput="updateValue('value_home', this)" data-fair-odd="">
+                    <span id="value_home" class="value-badge value-empty">--</span>
+                </div>
+                <button onclick="openBetModal('1X2', 'Победа хозяев', document.getElementById('prob_home').innerText, document.getElementById('odd_home').innerText.replace('Кэф: ', ''), document.getElementById('bk_home').value)"
+                        class="save-btn card-save-row">Сохранить</button>
             </div>
             <div class="outcome-card draw">
                 <div class="label">Ничья</div>
                 <div class="value" id="prob_draw">--%</div>
                 <div class="odd" id="odd_draw">Кэф: --</div>
+                <div class="card-value-row">
+                    <label>БК:</label>
+                    <input type="number" step="0.01" class="bk-odd-input" id="bk_draw"
+                           placeholder="Кэф" oninput="updateValue('value_draw', this)" data-fair-odd="">
+                    <span id="value_draw" class="value-badge value-empty">--</span>
+                </div>
+                <button onclick="openBetModal('1X2', 'Ничья', document.getElementById('prob_draw').innerText, document.getElementById('odd_draw').innerText.replace('Кэф: ', ''), document.getElementById('bk_draw').value)"
+                        class="save-btn card-save-row">Сохранить</button>
             </div>
             <div class="outcome-card away">
                 <div class="label">Победа гостей</div>
                 <div class="value" id="prob_away">--%</div>
                 <div class="odd" id="odd_away">Кэф: --</div>
+                <div class="card-value-row">
+                    <label>БК:</label>
+                    <input type="number" step="0.01" class="bk-odd-input" id="bk_away"
+                           placeholder="Кэф" oninput="updateValue('value_away', this)" data-fair-odd="">
+                    <span id="value_away" class="value-badge value-empty">--</span>
+                </div>
+                <button onclick="openBetModal('1X2', 'Победа гостей', document.getElementById('prob_away').innerText, document.getElementById('odd_away').innerText.replace('Кэф: ', ''), document.getElementById('bk_away').value)"
+                        class="save-btn card-save-row">Сохранить</button>
             </div>
         </div>
     </div>
 
     <!-- Азиатская фора 0 -->
     <div class="pred-block">
-        <h3>🔄 Азиатская фора 0</h3>
+        <h3>Азиатская фора 0</h3>
         <div class="outcome-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="outcome-card ah0">
                 <div class="label">Хозяева (0)</div>
                 <div class="value" id="home_ah0_prob">--%</div>
                 <div class="odd" id="home_ah0_odd">Кэф: --</div>
+                <div class="card-value-row">
+                    <label>БК:</label>
+                    <input type="number" step="0.01" class="bk-odd-input" id="bk_ah0_home"
+                           placeholder="Кэф" oninput="updateValue('value_ah0_home', this)" data-fair-odd="">
+                    <span id="value_ah0_home" class="value-badge value-empty">--</span>
+                </div>
+                <button onclick="openBetModal('Ф(0)', 'Хозяева (0)', document.getElementById('home_ah0_prob').innerText, document.getElementById('home_ah0_odd').innerText.replace('Кэф: ', ''), document.getElementById('bk_ah0_home').value)"
+                        class="save-btn card-save-row">Сохранить</button>
             </div>
             <div class="outcome-card ah0">
                 <div class="label">Гости (0)</div>
                 <div class="value" id="away_ah0_prob">--%</div>
                 <div class="odd" id="away_ah0_odd">Кэф: --</div>
+                <div class="card-value-row">
+                    <label>БК:</label>
+                    <input type="number" step="0.01" class="bk-odd-input" id="bk_ah0_away"
+                           placeholder="Кэф" oninput="updateValue('value_ah0_away', this)" data-fair-odd="">
+                    <span id="value_ah0_away" class="value-badge value-empty">--</span>
+                </div>
+                <button onclick="openBetModal('Ф(0)', 'Гости (0)', document.getElementById('away_ah0_prob').innerText, document.getElementById('away_ah0_odd').innerText.replace('Кэф: ', ''), document.getElementById('bk_ah0_away').value)"
+                        class="save-btn card-save-row">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <!-- Индивидуальные Голы и Ставки -->
     <div class="two-col">
+        <!-- Индивидуальные Голы -->
         <div class="pred-block">
-            <h3>⚽ Индивидуальные Голы</h3>
-            <table id="individual-goals-table" class="goals-table">
+            <h3>Индивидуальные Голы (ИТБ)</h3>
+            <table class="market-table">
                 <thead>
                     <tr>
-                        <th>КОМАНДА</th>
-                        <th>ИТБ 0,5</th>
-                        <th>ИТБ 1,5</th>
+                        <th>Рынок</th>
+                        <th>Вероятн.</th>
+                        <th>Fair Кэф</th>
+                        <th>Кэф БК</th>
+                        <th>Value</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Домашняя</td>
-                        <td id="home_over_05">--%</td>
-                        <td id="home_over_15">--%</td>
+                        <td class="team-home">ИТБ 0.5 Дом.</td>
+                        <td id="itb05_home_prob">--%</td>
+                        <td><span class="fair-odd" id="itb05_home_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_itb05_home"
+                                   placeholder="Кэф" oninput="updateValue('value_itb05_home', this)" data-fair-odd=""></td>
+                        <td><span id="value_itb05_home" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('ИТБ 0.5', 'ИТБ 0.5 Домашняя', 'itb05_home_prob', 'itb05_home_odd', 'bk_itb05_home')" class="save-btn">Сохранить</button></td>
                     </tr>
                     <tr>
-                        <td>Гостевая</td>
-                        <td id="away_over_05">--%</td>
-                        <td id="away_over_15">--%</td>
+                        <td class="team-home">ИТБ 1.5 Дом.</td>
+                        <td id="itb15_home_prob">--%</td>
+                        <td><span class="fair-odd" id="itb15_home_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_itb15_home"
+                                   placeholder="Кэф" oninput="updateValue('value_itb15_home', this)" data-fair-odd=""></td>
+                        <td><span id="value_itb15_home" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('ИТБ 1.5', 'ИТБ 1.5 Домашняя', 'itb15_home_prob', 'itb15_home_odd', 'bk_itb15_home')" class="save-btn">Сохранить</button></td>
+                    </tr>
+                    <tr>
+                        <td class="team-away">ИТБ 0.5 Гост.</td>
+                        <td id="itb05_away_prob">--%</td>
+                        <td><span class="fair-odd" id="itb05_away_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_itb05_away"
+                                   placeholder="Кэф" oninput="updateValue('value_itb05_away', this)" data-fair-odd=""></td>
+                        <td><span id="value_itb05_away" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('ИТБ 0.5', 'ИТБ 0.5 Гостевая', 'itb05_away_prob', 'itb05_away_odd', 'bk_itb05_away')" class="save-btn">Сохранить</button></td>
+                    </tr>
+                    <tr>
+                        <td class="team-away">ИТБ 1.5 Гост.</td>
+                        <td id="itb15_away_prob">--%</td>
+                        <td><span class="fair-odd" id="itb15_away_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_itb15_away"
+                                   placeholder="Кэф" oninput="updateValue('value_itb15_away', this)" data-fair-odd=""></td>
+                        <td><span id="value_itb15_away" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('ИТБ 1.5', 'ИТБ 1.5 Гостевая', 'itb15_away_prob', 'itb15_away_odd', 'bk_itb15_away')" class="save-btn">Сохранить</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
+        <!-- Тоталы и Обе Забьют -->
         <div class="pred-block">
-            <h3>💰 Ставки</h3>
-            <table id="markets-table" class="betting-table">
+            <h3>Тоталы и ОЗ</h3>
+            <table class="market-table">
                 <thead>
                     <tr>
                         <th>Рынок</th>
-                        <th>Вероятность</th>
-                        <th>Справедливый Кэф</th>
+                        <th>Вероятн.</th>
+                        <th>Fair Кэф</th>
+                        <th>Кэф БК</th>
+                        <th>Value</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>ТБ 1.5</td>
-                        <td id="over15_prob">--%</td>
-                        <td><span class="fair-odd" id="over15_odd">--</span></td>
-                    </tr>
-                    <tr>
                         <td>ТБ 2.5</td>
                         <td id="over25_prob">--%</td>
                         <td><span class="fair-odd" id="over25_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_over25"
+                                   placeholder="Кэф" oninput="updateValue('value_over25', this)" data-fair-odd=""></td>
+                        <td><span id="value_over25" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('Тотал', 'ТБ 2.5', 'over25_prob', 'over25_odd', 'bk_over25')" class="save-btn">Сохранить</button></td>
                     </tr>
                     <tr>
-                        <td>Обе забьют (BTTS)</td>
+                        <td>ТБ 1.5</td>
+                        <td id="over15_prob">--%</td>
+                        <td><span class="fair-odd" id="over15_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_over15"
+                                   placeholder="Кэф" oninput="updateValue('value_over15', this)" data-fair-odd=""></td>
+                        <td><span id="value_over15" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('Тотал', 'ТБ 1.5', 'over15_prob', 'over15_odd', 'bk_over15')" class="save-btn">Сохранить</button></td>
+                    </tr>
+                    <tr>
+                        <td>ОЗ (BTTS)</td>
                         <td id="btts_prob">--%</td>
                         <td><span class="fair-odd" id="btts_odd">--</span></td>
+                        <td><input type="number" step="0.01" class="bk-odd-input" id="bk_btts"
+                                   placeholder="Кэф" oninput="updateValue('value_btts', this)" data-fair-odd=""></td>
+                        <td><span id="value_btts" class="value-badge value-empty">--</span></td>
+                        <td><button onclick="saveFromTable('ОЗ', 'Обе забьют', 'btts_prob', 'btts_odd', 'bk_btts')" class="save-btn">Сохранить</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    
+    <!-- Value Legend -->
+    <div class="pred-block" style="padding: 16px 24px;">
+        <div class="value-legend">
+            <div class="value-legend-item">
+                <span class="legend-dot green"></span> Value &gt; 8% — valuуная ставка
+            </div>
+            <div class="value-legend-item">
+                <span class="legend-dot yellow"></span> Value 3-8% — на грани
+            </div>
+            <div class="value-legend-item">
+                <span class="legend-dot red"></span> Value &lt; 3% — нет value
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно сохранения ставки -->
+    <div id="saveBetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background: white; border-radius: 16px; padding: 28px; width: 480px; max-width: 95%; max-height: 90vh; overflow-y: auto;">
+            <h3 style="margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">Новая ставка</h3>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Лига</label>
+                <input type="text" id="modal_league" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Хозяева</label>
+                    <input type="text" id="modal_home_team" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Гости</label>
+                    <input type="text" id="modal_away_team" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Дата и время матча</label>
+                <input type="datetime-local" id="modal_match_datetime" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Тип ставки</label>
+                    <input type="text" id="modal_bet_type" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Исход</label>
+                    <input type="text" id="modal_bet_description" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Категория</label>
+                <select id="modal_bet_category" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
+                    <option value="Одиночная">Одиночная</option>
+                    <option value="Валуй">Валуй</option>
+                    <option value="Экспресс">Экспресс</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Букмекер</label>
+                <select id="modal_bookmaker" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
+                    <option value="Fonbet">Fonbet</option>
+                    <option value="Winline">Winline</option>
+                    <option value="Pari">Pari</option>
+                    <option value="Бетсити">Бетсити</option>
+                    <option value="Марафон">Марафон</option>
+                </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Вероятность (модель)</label>
+                    <input type="number" step="0.0001" id="modal_probability" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Справедливый кэф</label>
+                    <input type="number" step="0.01" id="modal_fair_odd" readonly style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Коэффициент БК</label>
+                    <input type="number" step="0.01" id="modal_bookmaker_odd" placeholder="2.15" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Сумма ставки</label>
+                    <input type="number" step="1" id="modal_stake" placeholder="1000" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
+                </div>
+            </div>
+            <!-- Value в модалке -->
+            <div id="modal_value_display" style="display: none; margin-bottom: 16px; padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 12px; color: #6B7280; margin-bottom: 4px;">Value</div>
+                <div id="modal_value_text" style="font-size: 24px; font-weight: 700;">--</div>
+                <div id="modal_kelly_text" style="font-size: 11px; color: #6B7280; margin-top: 4px;"></div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; color: #6B7280; margin-bottom: 4px;">Заметки</label>
+                <textarea id="modal_notes" rows="2" placeholder="Дополнительная информация" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; resize: vertical;"></textarea>
+            </div>
+            <input type="hidden" id="modal_status" value="pending">
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="closeBetModal()" style="padding: 10px 20px; background: #F3F4F6; border: 1px solid #D1D5DB; border-radius: 8px; font-weight: 500; cursor: pointer;">Отмена</button>
+                <button onclick="submitBet()" style="padding: 10px 20px; background: #4F46E5; color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Пороговые значения для раскраски
-        const THRESHOLD_OUTCOME = 60;   // Для 1X2 и форы 0
-        const THRESHOLD_OTHER = 70;      // Для голов и ставок
+        const THRESHOLD_OUTCOME = 60;
+        const THRESHOLD_OTHER = 70;
 
         document.addEventListener('DOMContentLoaded', loadLeagues);
 
-        // Вспомогательная функция: применить цвет к элементу
         function applyColor(elementId, probability, threshold) {
             const el = document.getElementById(elementId);
             if (!el) return;
             el.classList.remove('prob-high', 'prob-normal');
-            if (probability > threshold) {
-                el.classList.add('prob-high');
+            if (probability > threshold) el.classList.add('prob-high');
+            else el.classList.add('prob-normal');
+        }
+
+        // Парсим вероятность из строки "45.2%" -> 45.2
+        function parseProb(str) {
+            if (!str || str === '--%') return 0;
+            return parseFloat(str.replace('%', '').trim()) || 0;
+        }
+
+        // =============================================
+        // VALUE CALCULATOR
+        // =============================================
+        function updateValue(valueId, inputEl) {
+            const valueEl = document.getElementById(valueId);
+            if (!valueEl) return;
+
+            const fairOdd = parseFloat(inputEl.dataset.fairOdd);
+            const bkOdd = parseFloat(inputEl.value);
+
+            if (!fairOdd || !bkOdd || bkOdd <= 1) {
+                valueEl.textContent = '--';
+                valueEl.className = 'value-badge value-empty';
+                return;
+            }
+
+            const val = (bkOdd / fairOdd - 1) * 100;
+            const text = (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+            valueEl.textContent = text;
+
+            if (val > 8) {
+                valueEl.className = 'value-badge value-positive';
+            } else if (val > 3) {
+                valueEl.className = 'value-badge value-warning';
             } else {
-                el.classList.add('prob-normal');
+                valueEl.className = 'value-badge value-negative';
             }
         }
 
+        // Value в модалке (при вводе кэфа БК)
+        document.addEventListener('DOMContentLoaded', function() {
+            const bkInput = document.getElementById('modal_bookmaker_odd');
+            if (bkInput) {
+                bkInput.addEventListener('input', function() {
+                    updateModalValue();
+                });
+            }
+        });
+
+        function updateModalValue() {
+            const fairOdd = parseFloat(document.getElementById('modal_fair_odd').value);
+            const bkOdd = parseFloat(document.getElementById('modal_bookmaker_odd').value);
+            const display = document.getElementById('modal_value_display');
+            const text = document.getElementById('modal_value_text');
+            const kelly = document.getElementById('modal_kelly_text');
+
+            if (!fairOdd || !bkOdd || bkOdd <= 1) {
+                display.style.display = 'none';
+                return;
+            }
+
+            const val = (bkOdd / fairOdd - 1) * 100;
+            const valText = (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+            text.textContent = valText;
+
+            // Kelly (фракционный 25%)
+            const prob = 1.0 / fairOdd;
+            const kellyFull = (prob * bkOdd - 1) / (bkOdd - 1);
+            const kellyFrac = kellyFull * 0.25;
+            kelly.textContent = 'Kelly (25%): ' + (kellyFrac * 100).toFixed(1) + '% от банка';
+
+            display.style.display = 'block';
+            if (val > 8) {
+                display.style.background = 'rgba(16, 185, 129, 0.1)';
+                display.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                text.style.color = '#059669';
+            } else if (val > 3) {
+                display.style.background = 'rgba(245, 158, 11, 0.1)';
+                display.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+                text.style.color = '#D97706';
+            } else {
+                display.style.background = 'rgba(239, 68, 68, 0.06)';
+                display.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+                text.style.color = '#9CA3AF';
+            }
+        }
+
+        // =============================================
+        // API CALLS
+        // =============================================
         async function loadLeagues() {
             try {
                 const res = await fetch('/api/leagues');
                 const data = await res.json();
                 const select = document.getElementById('league');
                 select.innerHTML = '<option value="">Выберите лигу</option>';
-                data.leagues.forEach(l => {
-                    select.innerHTML += `<option value="${l}">${l}</option>`;
-                });
+                data.leagues.forEach(l => { select.innerHTML += `<option value="${l}">${l}</option>`; });
             } catch (e) { console.error('Ошибка загрузки лиг:', e); }
         }
 
         async function loadTeams() {
             const league = document.getElementById('league').value;
             if (!league) return;
-            
             try {
                 const res = await fetch(`/api/teams?league=${encodeURIComponent(league)}`);
                 const data = await res.json();
-                
                 const homeSelect = document.getElementById('home_team');
                 const awaySelect = document.getElementById('away_team');
-                
                 homeSelect.innerHTML = '<option value="">Выберите команду</option>';
                 awaySelect.innerHTML = '<option value="">Выберите команду</option>';
-                
                 data.teams.forEach(t => {
                     homeSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
                     awaySelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
@@ -359,96 +655,143 @@
             const home = document.getElementById('home_team').value;
             const away = document.getElementById('away_team').value;
             const league = document.getElementById('league').value;
-            
-            if (!home || !away || home === away) {
-                clearPrediction();
-                return;
-            }
+            if (!home || !away || home === away) { clearPrediction(); return; }
 
             try {
                 const res = await fetch(`/api/predict?home_id=${home}&away_id=${away}&league=${encodeURIComponent(league)}`);
                 const data = await res.json();
                 
-                console.log('📊 Получены данные прогноза:', data);
-                
-                // === Исход 1X2 ===
+                // Модель
+                const badge = document.getElementById('modelBadge');
+                if (data.model_status === 'hybrid_v2') {
+                    badge.textContent = 'Hybrid V2';
+                    badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                    badge.style.color = '#059669';
+                } else if (data.model_status === 'v1_fallback') {
+                    badge.textContent = 'V1 Fallback';
+                    badge.style.background = 'rgba(245, 158, 11, 0.15)';
+                    badge.style.color = '#D97706';
+                } else {
+                    badge.textContent = 'Mock';
+                    badge.style.background = 'rgba(107, 114, 128, 0.15)';
+                    badge.style.color = '#6B7280';
+                }
+
+                // =============================================
+                // 1X2
+                // =============================================
                 const probHome = data.prob_home * 100;
                 const probDraw = data.prob_draw * 100;
                 const probAway = data.prob_away * 100;
-                
                 document.getElementById('prob_home').textContent = probHome.toFixed(1) + '%';
                 document.getElementById('odd_home').textContent = 'Кэф: ' + data.fair_odd_home.toFixed(2);
                 applyColor('prob_home', probHome, THRESHOLD_OUTCOME);
-                
+                setFairOdd('bk_home', data.fair_odd_home);
+
                 document.getElementById('prob_draw').textContent = probDraw.toFixed(1) + '%';
                 document.getElementById('odd_draw').textContent = 'Кэф: ' + data.fair_odd_draw.toFixed(2);
                 applyColor('prob_draw', probDraw, THRESHOLD_OUTCOME);
-                
+                setFairOdd('bk_draw', data.fair_odd_draw);
+
                 document.getElementById('prob_away').textContent = probAway.toFixed(1) + '%';
                 document.getElementById('odd_away').textContent = 'Кэф: ' + data.fair_odd_away.toFixed(2);
                 applyColor('prob_away', probAway, THRESHOLD_OUTCOME);
-                
-                // === Азиатская фора 0 ===
+                setFairOdd('bk_away', data.fair_odd_away);
+
+                // =============================================
+                // Фора 0
+                // =============================================
                 if (data.home_ah0_prob !== undefined) {
                     const homeAh0Prob = data.home_ah0_prob * 100;
                     const awayAh0Prob = data.away_ah0_prob * 100;
-                    
                     document.getElementById('home_ah0_prob').textContent = homeAh0Prob.toFixed(1) + '%';
                     document.getElementById('home_ah0_odd').textContent = 'Кэф: ' + data.fair_odd_home_ah0.toFixed(2);
                     applyColor('home_ah0_prob', homeAh0Prob, THRESHOLD_OUTCOME);
-                    
+                    setFairOdd('bk_ah0_home', data.fair_odd_home_ah0);
+
                     document.getElementById('away_ah0_prob').textContent = awayAh0Prob.toFixed(1) + '%';
                     document.getElementById('away_ah0_odd').textContent = 'Кэф: ' + data.fair_odd_away_ah0.toFixed(2);
                     applyColor('away_ah0_prob', awayAh0Prob, THRESHOLD_OUTCOME);
+                    setFairOdd('bk_ah0_away', data.fair_odd_away_ah0);
                 }
-                
-                // === Индивидуальные голы ===
-                const goalsData = [
-                    {id: 'home_over_05', val: data.home_over_05},
-                    {id: 'home_over_15', val: data.home_over_15},
-                    {id: 'away_over_05', val: data.away_over_05},
-                    {id: 'away_over_15', val: data.away_over_15}
-                ];
-                
-                goalsData.forEach(item => {
-                    document.getElementById(item.id).textContent = item.val.toFixed(1) + '%';
-                    applyColor(item.id, item.val, THRESHOLD_OTHER);
-                });
-                
-                // === Ставки ===
-                const over25Prob = data.over25_prob;
-                const bttsProb = data.btts_prob;
-                
-                document.getElementById('over25_prob').textContent = over25Prob.toFixed(1) + '%';
+
+                // =============================================
+                // Индивидуальные тоталы (ИТБ)
+                // =============================================
+                const homeItb05 = data.home_itb05_prob !== undefined ? data.home_itb05_prob : (data.home_over_05 || 0);
+                const homeItb15 = data.home_itb15_prob !== undefined ? data.home_itb15_prob : (data.home_over_15 || 0);
+                const awayItb05 = data.away_itb05_prob !== undefined ? data.away_itb05_prob : (data.away_over_05 || 0);
+                const awayItb15 = data.away_itb15_prob !== undefined ? data.away_itb15_prob : (data.away_over_15 || 0);
+
+                // V2 fair odds or fallback
+                const homeItb05Odd = data.home_itb05_odd || (100 / homeItb05);
+                const homeItb15Odd = data.home_itb15_odd || (100 / homeItb15);
+                const awayItb05Odd = data.away_itb05_odd || (100 / awayItb05);
+                const awayItb15Odd = data.away_itb15_odd || (100 / awayItb15);
+
+                document.getElementById('itb05_home_prob').textContent = homeItb05.toFixed(1) + '%';
+                applyColor('itb05_home_prob', homeItb05, THRESHOLD_OTHER);
+                document.getElementById('itb05_home_odd').textContent = homeItb05Odd.toFixed(2);
+                setFairOdd('bk_itb05_home', homeItb05Odd);
+
+                document.getElementById('itb15_home_prob').textContent = homeItb15.toFixed(1) + '%';
+                applyColor('itb15_home_prob', homeItb15, THRESHOLD_OTHER);
+                document.getElementById('itb15_home_odd').textContent = homeItb15Odd.toFixed(2);
+                setFairOdd('bk_itb15_home', homeItb15Odd);
+
+                document.getElementById('itb05_away_prob').textContent = awayItb05.toFixed(1) + '%';
+                applyColor('itb05_away_prob', awayItb05, THRESHOLD_OTHER);
+                document.getElementById('itb05_away_odd').textContent = awayItb05Odd.toFixed(2);
+                setFairOdd('bk_itb05_away', awayItb05Odd);
+
+                document.getElementById('itb15_away_prob').textContent = awayItb15.toFixed(1) + '%';
+                applyColor('itb15_away_prob', awayItb15, THRESHOLD_OTHER);
+                document.getElementById('itb15_away_odd').textContent = awayItb15Odd.toFixed(2);
+                setFairOdd('bk_itb15_away', awayItb15Odd);
+
+                // =============================================
+                // Тоталы + ОЗ
+                // =============================================
+                document.getElementById('over25_prob').textContent = data.over25_prob.toFixed(1) + '%';
                 document.getElementById('over25_odd').textContent = data.over25_odd.toFixed(2);
-                applyColor('over25_prob', over25Prob, THRESHOLD_OTHER);
-                
-                document.getElementById('btts_prob').textContent = bttsProb.toFixed(1) + '%';
-                document.getElementById('btts_odd').textContent = data.btts_odd.toFixed(2);
-                applyColor('btts_prob', bttsProb, THRESHOLD_OTHER);
+                applyColor('over25_prob', data.over25_prob, THRESHOLD_OTHER);
+                setFairOdd('bk_over25', data.over25_odd);
 
                 document.getElementById('over15_prob').textContent = data.over15_prob.toFixed(1) + '%';
                 document.getElementById('over15_odd').textContent = data.over15_odd.toFixed(2);
                 applyColor('over15_prob', data.over15_prob, THRESHOLD_OTHER);
-                
-                console.log('🎨 Все цвета применены!');
-                
-            } catch (e) { 
-                console.error('❌ Ошибка загрузки прогноза:', e); 
+                setFairOdd('bk_over15', data.over15_odd);
+
+                document.getElementById('btts_prob').textContent = data.btts_prob.toFixed(1) + '%';
+                document.getElementById('btts_odd').textContent = data.btts_odd.toFixed(2);
+                applyColor('btts_prob', data.btts_prob, THRESHOLD_OTHER);
+                setFairOdd('bk_btts', data.btts_odd);
+
+            } catch (e) { console.error('Ошибка загрузки прогноза:', e); }
+        }
+
+        // Установить fair odd в data-атрибут input'а и пересчитать value если кэф БК уже введён
+        function setFairOdd(inputId, fairOdd) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.dataset.fairOdd = fairOdd;
+            // Если кэф БК уже введён — пересчитать value
+            if (input.value) {
+                const valueId = 'value_' + inputId.replace('bk_', '');
+                updateValue(valueId, input);
             }
         }
 
         function clearPrediction() {
-            const ids = [
-                'prob_home', 'prob_draw', 'prob_away', 
-                'odd_home', 'odd_draw', 'odd_away',
-                'home_ah0_prob', 'home_ah0_odd',
-                'away_ah0_prob', 'away_ah0_odd',
-                'home_over_05', 'home_over_15', 'away_over_05', 'away_over_15','over15_prob', 'over15_odd',
-                'over25_prob', 'over25_odd', 'btts_prob', 'btts_odd'
+            // Все IDs для сброса
+            const probIds = [
+                'prob_home','prob_draw','prob_away','odd_home','odd_draw','odd_away',
+                'home_ah0_prob','home_ah0_odd','away_ah0_prob','away_ah0_odd',
+                'itb05_home_prob','itb05_home_odd','itb15_home_prob','itb15_home_odd',
+                'itb05_away_prob','itb05_away_odd','itb15_away_prob','itb15_away_odd',
+                'over25_prob','over25_odd','over15_prob','over15_odd','btts_prob','btts_odd'
             ];
-            
-            ids.forEach(id => {
+            probIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (!el) return;
                 el.classList.remove('prob-high', 'prob-normal');
@@ -457,6 +800,18 @@
                 else if (el.id.includes('odd')) el.textContent = 'Кэф: --';
                 else el.textContent = '--%';
             });
+
+            // Сбросить BK inputs и Value badges
+            const bkInputs = document.querySelectorAll('.bk-odd-input');
+            bkInputs.forEach(input => {
+                input.value = '';
+                input.dataset.fairOdd = '';
+            });
+            const valueBadges = document.querySelectorAll('.value-badge');
+            valueBadges.forEach(badge => {
+                badge.textContent = '--';
+                badge.className = 'value-badge value-empty';
+            });
         }
 
         async function updateDB() {
@@ -464,18 +819,103 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner"></span> <span>Обновление...</span>';
             btn.classList.add('loading');
-            
             try {
                 const res = await fetch('/api/update_db', { method: 'POST' });
                 const data = await res.json();
-                alert(data.status === 'success' ? '✅ База обновлена!' : '⚠️ ' + data.message);
-            } catch (e) {
-                alert('❌ Ошибка обновления: ' + e.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.classList.remove('loading');
+                alert(data.status === 'success' ? 'База обновлена!' : data.message);
+            } catch (e) { alert('Ошибка: ' + e.message); }
+            finally { btn.innerHTML = originalText; btn.classList.remove('loading'); }
+        }
+
+        // =============================================
+        // MODAL
+        // =============================================
+        let currentBetModalData = {};
+
+        function openBetModal(betType, betDescription, probability, fairOdd, bkOdd) {
+            const leagueSelect = document.getElementById('league');
+            const homeSelect = document.getElementById('home_team');
+            const awaySelect = document.getElementById('away_team');
+            const league = leagueSelect.options[leagueSelect.selectedIndex]?.text || '';
+            const homeTeam = homeSelect.options[homeSelect.selectedIndex]?.text || '';
+            const awayTeam = awaySelect.options[awaySelect.selectedIndex]?.text || '';
+            if (!homeTeam || !awayTeam) { alert('Сначала выберите команды!'); return; }
+
+            const now = new Date();
+            const localDatetime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            const prob = typeof probability === 'string' ? parseProb(probability) : probability;
+            const odd = typeof fairOdd === 'string' ? parseFloat(fairOdd) : fairOdd;
+
+            document.getElementById('modal_league').value = league;
+            document.getElementById('modal_home_team').value = homeTeam;
+            document.getElementById('modal_away_team').value = awayTeam;
+            document.getElementById('modal_match_datetime').value = localDatetime;
+            document.getElementById('modal_bet_type').value = betType;
+            document.getElementById('modal_bet_description').value = betDescription;
+            document.getElementById('modal_probability').value = (prob / 100).toFixed(4);
+            document.getElementById('modal_fair_odd').value = (odd || (100 / prob)).toFixed(2);
+            document.getElementById('modal_bookmaker_odd').value = bkOdd || '';
+            document.getElementById('modal_stake').value = '1000';
+            document.getElementById('modal_notes').value = '';
+            document.getElementById('modal_bet_category').value = 'Одиночная';
+
+            // Скрыть value блок до ввода кэфа
+            document.getElementById('modal_value_display').style.display = 'none';
+
+            currentBetModalData = {
+                league, home_team: homeTeam, away_team: awayTeam, match_datetime: localDatetime,
+                bet_type: betType, bet_description: betDescription,
+                probability: prob / 100, fair_odd: odd || (100 / prob)
+            };
+
+            document.getElementById('saveBetModal').style.display = 'flex';
+
+            // Если кэф БК уже заполнен — показать value
+            if (bkOdd) {
+                setTimeout(updateModalValue, 50);
             }
         }
+
+        function closeBetModal() { document.getElementById('saveBetModal').style.display = 'none'; }
+
+        // Сохранение из таблицы (ИТБ / Ставки)
+        function saveFromTable(betType, desc, probId, oddId, bkInputId) {
+            const prob = parseProb(document.getElementById(probId).innerText);
+            const odd = parseFloat(document.getElementById(oddId).innerText) || (100 / prob);
+            const bkOdd = document.getElementById(bkInputId).value || '';
+            openBetModal(betType, desc, prob, odd, bkOdd);
+        }
+
+        async function submitBet() {
+            const betData = {
+                league: currentBetModalData.league,
+                home_team: currentBetModalData.home_team,
+                away_team: currentBetModalData.away_team,
+                match_datetime: document.getElementById('modal_match_datetime').value,
+                bet_type: currentBetModalData.bet_type,
+                bet_description: currentBetModalData.bet_description,
+                bet_category: document.getElementById('modal_bet_category').value,
+                bookmaker: document.getElementById('modal_bookmaker').value,
+                probability: currentBetModalData.probability,
+                fair_odd: currentBetModalData.fair_odd,
+                bookmaker_odd: parseFloat(document.getElementById('modal_bookmaker_odd').value),
+                stake: parseFloat(document.getElementById('modal_stake').value),
+                status: document.getElementById('modal_status').value,
+                result_goals_h: null, result_goals_a: null, payout: null, profit: null,
+                notes: document.getElementById('modal_notes').value
+            };
+            if (!betData.bookmaker_odd || betData.bookmaker_odd <= 1) { alert('Введите корректный коэффициент букмекера (>1)'); return; }
+            if (!betData.stake || betData.stake <= 0) { alert('Введите сумму ставки (>0)'); return; }
+            try {
+                const res = await fetch('/api/bet_records', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(betData) });
+                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Ошибка сервера'); }
+                const data = await res.json();
+                alert(`Ставка сохранена! ID: ${data.id}`);
+                closeBetModal();
+            } catch(e) { alert('Ошибка: ' + e.message); }
+        }
+
+        document.addEventListener('click', function(e) { if (e.target === document.getElementById('saveBetModal')) closeBetModal(); });
     </script>
 </body>
 </html>
