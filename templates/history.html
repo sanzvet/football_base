@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История ставок — Football Predictor Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: rgba(79, 70, 229, 0.08);
+            --success: #10B981;
+            --success-bg: rgba(16, 185, 129, 0.08);
+            --warning: #F59E0B;
+            --warning-bg: rgba(245, 158, 11, 0.08);
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.08);
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-secondary: #6B7280;
+            --text-gray: #9CA3AF;
+            --border: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); padding: 24px; line-height: 1.5; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; padding: 0 8px;
+        }
+        .header h1 { font-size: 24px; font-weight: 700; }
+        .header h1 span { color: var(--primary); }
+
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 8px;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+            box-shadow: var(--shadow); text-decoration: none;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+        /* ===== ФИЛЬТРЫ ===== */
+        .filters {
+            background: var(--card-bg); border-radius: 12px; padding: 14px 20px;
+            margin-bottom: 20px; border: 1px solid var(--border);
+            display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+        }
+        .filter-group { display: flex; align-items: center; gap: 6px; }
+        .filter-group label { font-size: 12px; color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+        .filter-group select, .filter-group input {
+            padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; background: white; font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== ДАШБОРД ===== */
+        .dashboard {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+            margin-bottom: 20px;
+        }
+        .dash-card {
+            background: var(--card-bg); border-radius: 12px; padding: 16px 18px;
+            border: 1px solid var(--border); text-align: center;
+        }
+        .dash-card .label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .dash-card .value { font-size: 24px; font-weight: 700; line-height: 1.2; }
+        .dash-card .sub { font-size: 11px; color: var(--text-gray); margin-top: 4px; }
+
+        .dash-roi { border-top: 3px solid var(--primary); }
+        .dash-profit.positive { border-top: 3px solid var(--success); }
+        .dash-profit.negative { border-top: 3px solid var(--danger); }
+        .dash-winrate { border-top: 3px solid var(--warning); }
+        .dash-yield { border-top: 3px solid var(--success); }
+        .dash-avg-odd { border-top: 3px solid var(--info, #3B82F6); }
+        .dash-stakes { border-top: 3px solid #8B5CF6; }
+
+        /* ===== BREAKDOWN РАЗБИВКА ===== */
+        .breakdown-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            margin-bottom: 20px;
+        }
+        .breakdown-card {
+            background: var(--card-bg); border-radius: 12px; padding: 18px;
+            border: 1px solid var(--border);
+        }
+        .breakdown-card h3 {
+            font-size: 14px; font-weight: 600; margin-bottom: 14px;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .breakdown-row {
+            display: flex; align-items: center; padding: 6px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .breakdown-row:last-child { border-bottom: none; }
+        .breakdown-label {
+            width: 120px; font-size: 13px; font-weight: 500; flex-shrink: 0;
+        }
+        .breakdown-bar-container {
+            flex: 1; height: 20px; background: #F3F4F6; border-radius: 4px;
+            overflow: hidden; margin: 0 12px;
+        }
+        .breakdown-bar {
+            height: 100%; border-radius: 4px; min-width: 2px;
+            transition: width 0.3s ease;
+        }
+        .breakdown-stats {
+            display: flex; gap: 12px; flex-shrink: 0; min-width: 150px; justify-content: flex-end;
+        }
+        .breakdown-stat {
+            font-size: 12px; color: var(--text-secondary); text-align: right;
+        }
+        .breakdown-stat strong {
+            display: block; font-size: 14px; color: var(--text-main); font-weight: 700;
+        }
+
+        /* ===== ТАБЛИЦА ===== */
+        .table-container {
+            background: var(--card-bg); border-radius: 12px;
+            border: 1px solid var(--border); overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+        th {
+            background: #FAFAFA; color: var(--text-secondary); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.3px; font-size: 11px;
+            white-space: nowrap;
+        }
+        tr:hover td { background: #F9FAFB; }
+        tr:last-child td { border-bottom: none; }
+
+        .status-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+        }
+        .status-pending { background: var(--warning-bg); color: #92400E; }
+        .status-won { background: var(--success-bg); color: #065F46; }
+        .status-lost { background: var(--danger-bg); color: #991B1B; }
+        .status-void { background: #F3F4F6; color: #6B7280; }
+
+        .profit-positive { color: var(--success); font-weight: 700; }
+        .profit-negative { color: var(--danger); font-weight: 700; }
+        .profit-zero { color: var(--text-gray); }
+
+        .value-positive { color: var(--success); font-weight: 600; font-size: 12px; }
+        .value-negative { color: var(--danger); font-weight: 600; font-size: 12px; }
+        .value-na { color: var(--text-gray); font-size: 12px; }
+
+        .odd-col { font-weight: 600; white-space: nowrap; }
+        .match-cell strong { display: block; }
+        .match-cell small { color: var(--text-secondary); font-weight: 400; }
+        .score-cell { font-weight: 600; text-align: center; white-space: nowrap; }
+
+        /* ===== ПАГИНАЦИЯ ===== */
+        .pagination {
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            padding: 16px; background: var(--card-bg); border-radius: 12px;
+            border: 1px solid var(--border); margin-top: 16px;
+        }
+        .pagination button {
+            padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px;
+            background: white; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .pagination button:hover { border-color: var(--primary); color: var(--primary); }
+        .pagination button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pagination .info { font-size: 12px; color: var(--text-secondary); }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: repeat(3, 1fr); }
+            .breakdown-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .filters { flex-direction: column; align-items: stretch; }
+        }
+        @media (max-width: 600px) {
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+            .breakdown-stats { min-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Football <span>Predictor</span> · История</h1>
+        <div style="display: flex; gap: 8px;">
+            <a href="/" class="btn btn-outline">← На главную</a>
+            <button class="btn btn-primary" onclick="loadHistory()">Обновить</button>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="filters">
+        <div class="filter-group">
+            <label>Статус:</label>
+            <select id="statusFilter" onchange="loadHistory()">
+                <option value="">Все</option>
+                <option value="pending">Ожидают</option>
+                <option value="won">Выигранные</option>
+                <option value="lost">Проигранные</option>
+                <option value="void">Возвраты</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Рынок:</label>
+            <select id="typeFilter" onchange="loadHistory()">
+                <option value="">Все</option>
+                <option value="1X2">1X2</option>
+                <option value="Тотал">Тотал</option>
+                <option value="ИТБ">ИТБ</option>
+                <option value="ОЗ">ОЗ</option>
+                <option value="Ф(0)">Фора 0</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Букмекер:</label>
+            <select id="bookmakerFilter" onchange="loadHistory()">
+                <option value="">Все</option>
+                <option value="Fonbet">Fonbet</option>
+                <option value="Winline">Winline</option>
+                <option value="Pari">Pari</option>
+                <option value="Бетсити">Бетсити</option>
+                <option value="Марафон">Марафон</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Категория:</label>
+            <select id="categoryFilter" onchange="loadHistory()">
+                <option value="">Все</option>
+                <option value="Одиночная">Одиночная</option>
+                <option value="Валуй">Валуй</option>
+                <option value="Экспресс">Экспресс</option>
+            </select>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="resetFilters()" style="margin-left: auto;">Сбросить</button>
+    </div>
+
+    <!-- Дашборд -->
+    <div class="dashboard" id="dashboard">
+        <div class="dash-card dash-roi">
+            <div class="label">ROI</div>
+            <div class="value" id="d_roi">—</div>
+            <div class="sub" id="d_roi_hint"></div>
+        </div>
+        <div class="dash-card dash-profit" id="d_profit_card">
+            <div class="label">Прибыль</div>
+            <div class="value" id="d_profit">0 ₽</div>
+            <div class="sub" id="d_profit_hint"></div>
+        </div>
+        <div class="dash-card dash-winrate">
+            <div class="label">Win Rate</div>
+            <div class="value" id="d_winrate">—</div>
+            <div class="sub" id="d_winrate_hint"></div>
+        </div>
+        <div class="dash-card dash-yield">
+            <div class="label">Yield (законч.)</div>
+            <div class="value" id="d_yield">—</div>
+            <div class="sub">ROI только по решённым</div>
+        </div>
+        <div class="dash-card dash-avg-odd">
+            <div class="label">Средний Кэф</div>
+            <div class="value" id="d_avgodd">—</div>
+            <div class="sub">По завершённым</div>
+        </div>
+        <div class="dash-card dash-stakes">
+            <div class="label">Оборот</div>
+            <div class="value" id="d_turnover">0 ₽</div>
+            <div class="sub">Сумма всех ставок</div>
+        </div>
+    </div>
+
+    <!-- Разбивка ROI -->
+    <div class="breakdown-grid" id="breakdownSection" style="display: none;">
+        <div class="breakdown-card">
+            <h3>ROI по рынкам ставок</h3>
+            <div id="breakdownByType"></div>
+        </div>
+        <div class="breakdown-card">
+            <h3>ROI по Value (качество ставок)</h3>
+            <div id="breakdownByValue"></div>
+        </div>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Матч</th>
+                    <th>Ставка</th>
+                    <th>БК</th>
+                    <th>Fair</th>
+                    <th>Кэф</th>
+                    <th>Value</th>
+                    <th>Сумма</th>
+                    <th>Статус</th>
+                    <th>Счёт</th>
+                    <th>Прибыль</th>
+                    <th>Заметки</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="12" style="text-align: center; padding: 30px;">Загрузка данных...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагинация -->
+    <div class="pagination" id="pagination"></div>
+
+    <script>
+        let allRecords = [];
+        let filteredRecords = [];
+        const PAGE_SIZE = 20;
+        let currentPage = 1;
+
+        // ==============================
+        // ЗАГРУЗКА ДАННЫХ
+        // ==============================
+        async function loadHistory() {
+            const status = document.getElementById('statusFilter').value;
+            let url = '/api/bet_records?limit=500';
+            if (status) url += '&status=' + encodeURIComponent(status);
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                allRecords = data.records || [];
+
+                applyFilters();
+            } catch (e) {
+                console.error('Ошибка загрузки истории:', e);
+                document.getElementById('tableBody').innerHTML =
+                    '<tr><td colspan="12" style="text-align: center; color: red;">Ошибка загрузки данных</td></tr>';
+            }
+        }
+
+        function applyFilters() {
+            const bookmaker = document.getElementById('bookmakerFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+
+            filteredRecords = allRecords;
+
+            if (bookmaker) filteredRecords = filteredRecords.filter(r => r.bookmaker === bookmaker);
+            if (category) filteredRecords = filteredRecords.filter(r => r.bet_category === category);
+            if (type) filteredRecords = filteredRecords.filter(r => r.bet_type === type);
+
+            currentPage = 1;
+            renderDashboard(filteredRecords);
+            renderBreakdown(filteredRecords);
+            renderTable();
+            renderPagination();
+        }
+
+        // ==============================
+        // ДАШБОРД
+        // ==============================
+        function renderDashboard(records) {
+            const total = records.length;
+            const decided = records.filter(r => r.status === 'won' || r.status === 'lost' || r.status === 'void');
+            const won = records.filter(r => r.status === 'won').length;
+            const lost = records.filter(r => r.status === 'lost').length;
+            const pending = records.filter(r => r.status === 'pending').length;
+            const void_ = records.filter(r => r.status === 'void').length;
+
+            const totalStake = records.reduce((s, r) => s + (r.stake || 0), 0);
+            const totalProfit = records.reduce((s, r) => s + (r.profit || 0), 0);
+            const decidedStake = decided.reduce((s, r) => s + (r.stake || 0), 0);
+            const decidedProfit = decided.reduce((s, r) => s + (r.profit || 0), 0);
+
+            const roi = totalStake > 0 ? (totalProfit / totalStake * 100) : 0;
+            const yield_ = decidedStake > 0 ? (decidedProfit / decidedStake * 100) : 0;
+            const winrate = decided.length > 0 ? (won / decided.length * 100) : 0;
+
+            const avgOdd = decided.length > 0
+                ? decided.reduce((s, r) => s + (r.bookmaker_odd || 0), 0) / decided.length
+                : 0;
+
+            // ROI
+            const roiEl = document.getElementById('d_roi');
+            roiEl.textContent = roi.toFixed(1) + '%';
+            roiEl.style.color = roi > 0 ? 'var(--success)' : (roi < 0 ? 'var(--danger)' : 'var(--text-main)');
+            document.getElementById('d_roi_hint').textContent = `${total} ставок`;
+
+            // Прибыль
+            const profitEl = document.getElementById('d_profit');
+            const profitCard = document.getElementById('d_profit_card');
+            profitEl.textContent = (totalProfit >= 0 ? '+' : '') + totalProfit.toFixed(0) + ' ₽';
+            profitEl.style.color = totalProfit > 0 ? 'var(--success)' : (totalProfit < 0 ? 'var(--danger)' : 'var(--text-main)');
+            profitCard.className = 'dash-card dash-profit ' + (totalProfit > 0 ? 'positive' : (totalProfit < 0 ? 'negative' : ''));
+            document.getElementById('d_profit_hint').textContent = `${won}W / ${lost}L / ${void_}V`;
+
+            // Win Rate
+            const wrEl = document.getElementById('d_winrate');
+            wrEl.textContent = winrate.toFixed(1) + '%';
+            wrEl.style.color = winrate > 55 ? 'var(--success)' : (winrate > 45 ? 'var(--warning)' : 'var(--danger)');
+            document.getElementById('d_winrate_hint').textContent = `${won} из ${decided.length} решённых`;
+
+            // Yield
+            const yieldEl = document.getElementById('d_yield');
+            yieldEl.textContent = yield_.toFixed(1) + '%';
+            yieldEl.style.color = yield_ > 0 ? 'var(--success)' : (yield_ < 0 ? 'var(--danger)' : 'var(--text-main)');
+
+            // Средний кэф
+            document.getElementById('d_avgodd').textContent = avgOdd > 0 ? avgOdd.toFixed(2) : '—';
+
+            // Оборот
+            document.getElementById('d_turnover').textContent = totalStake.toFixed(0) + ' ₽';
+        }
+
+        // ==============================
+        // РАЗБИВКА ROI
+        // ==============================
+        function renderBreakdown(records) {
+            const decided = records.filter(r => r.status === 'won' || r.status === 'lost' || r.status === 'void');
+            const breakdownSection = document.getElementById('breakdownSection');
+
+            if (decided.length < 2) {
+                breakdownSection.style.display = 'none';
+                return;
+            }
+            breakdownSection.style.display = 'grid';
+
+            renderBreakdownByType(decided);
+            renderBreakdownByValue(decided);
+        }
+
+        function renderBreakdownByType(records) {
+            const groups = {};
+            records.forEach(r => {
+                const type = r.bet_type || 'Другое';
+                if (!groups[type]) groups[type] = { stake: 0, profit: 0, count: 0, won: 0 };
+                groups[type].stake += r.stake || 0;
+                groups[type].profit += r.profit || 0;
+                groups[type].count++;
+                if (r.status === 'won') groups[type].won++;
+            });
+
+            const container = document.getElementById('breakdownByType');
+            container.innerHTML = '';
+
+            Object.entries(groups).forEach(([type, g]) => {
+                const roi = g.stake > 0 ? (g.profit / g.stake * 100) : 0;
+                const wr = g.count > 0 ? (g.won / g.count * 100) : 0;
+                const barColor = roi > 0 ? 'var(--success)' : (roi < 0 ? 'var(--danger)' : 'var(--text-gray)');
+                const barWidth = Math.min(Math.abs(roi) * 3, 100);
+
+                container.innerHTML += `
+                    <div class="breakdown-row">
+                        <div class="breakdown-label">${type}</div>
+                        <div class="breakdown-bar-container">
+                            <div class="breakdown-bar" style="width: ${barWidth}%; background: ${barColor};"></div>
+                        </div>
+                        <div class="breakdown-stats">
+                            <div class="breakdown-stat">
+                                ROI<strong style="color: ${barColor}">${roi > 0 ? '+' : ''}${roi.toFixed(1)}%</strong>
+                            </div>
+                            <div class="breakdown-stat">
+                                ${g.won}/${g.count}<strong>${wr.toFixed(0)}%</strong>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            if (Object.keys(groups).length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 16px;">Нет решённых ставок</div>';
+            }
+        }
+
+        function renderBreakdownByValue(records) {
+            // Рассчитываем value для каждой ставки
+            const withValue = records.map(r => {
+                const value = calcValue(r.fair_odd, r.bookmaker_odd);
+                return { ...r, value };
+            });
+
+            const ranges = {
+                'Value > 8%': { stake: 0, profit: 0, count: 0, won: 0 },
+                'Value 3-8%': { stake: 0, profit: 0, count: 0, won: 0 },
+                'Value < 3%': { stake: 0, profit: 0, count: 0, won: 0 },
+                'Без Value':  { stake: 0, profit: 0, count: 0, won: 0 },
+            };
+
+            withValue.forEach(r => {
+                let key;
+                if (r.value === null || r.value === undefined || isNaN(r.value)) {
+                    key = 'Без Value';
+                } else if (r.value > 8) {
+                    key = 'Value > 8%';
+                } else if (r.value > 3) {
+                    key = 'Value 3-8%';
+                } else {
+                    key = 'Value < 3%';
+                }
+                ranges[key].stake += r.stake || 0;
+                ranges[key].profit += r.profit || 0;
+                ranges[key].count++;
+                if (r.status === 'won') ranges[key].won++;
+            });
+
+            const container = document.getElementById('breakdownByValue');
+            container.innerHTML = '';
+
+            Object.entries(ranges).forEach(([label, g]) => {
+                if (g.count === 0) return;
+                const roi = g.stake > 0 ? (g.profit / g.stake * 100) : 0;
+                const wr = g.count > 0 ? (g.won / g.count * 100) : 0;
+                const barColor = roi > 0 ? 'var(--success)' : (roi < 0 ? 'var(--danger)' : 'var(--text-gray)');
+                const barWidth = Math.min(Math.abs(roi) * 3, 100);
+
+                container.innerHTML += `
+                    <div class="breakdown-row">
+                        <div class="breakdown-label">${label}</div>
+                        <div class="breakdown-bar-container">
+                            <div class="breakdown-bar" style="width: ${barWidth}%; background: ${barColor};"></div>
+                        </div>
+                        <div class="breakdown-stats">
+                            <div class="breakdown-stat">
+                                ROI<strong style="color: ${barColor}">${roi > 0 ? '+' : ''}${roi.toFixed(1)}%</strong>
+                            </div>
+                            <div class="breakdown-stat">
+                                ${g.won}/${g.count}<strong>${wr.toFixed(0)}%</strong>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            if (withValue.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 16px;">Нет решённых ставок</div>';
+            }
+        }
+
+        // ==============================
+        // ТАБЛИЦА
+        // ==============================
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const page = filteredRecords.slice(start, start + PAGE_SIZE);
+
+            if (page.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align: center; padding: 30px; color: var(--text-gray);">Нет записей</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = page.map(r => {
+                const matchDate = r.match_datetime ? new Date(r.match_datetime).toLocaleDateString('ru-RU') : '';
+                const statusClass = r.status === 'pending' ? 'status-pending' :
+                                   (r.status === 'won' ? 'status-won' :
+                                   (r.status === 'void' ? 'status-void' : 'status-lost'));
+                const statusText = r.status === 'pending' ? 'Ожидает' :
+                                   (r.status === 'won' ? 'Выигрыш' :
+                                   (r.status === 'void' ? 'Возврат' : 'Проигрыш'));
+
+                const profit = r.profit || 0;
+                const profitClass = profit > 0 ? 'profit-positive' : (profit < 0 ? 'profit-negative' : 'profit-zero');
+                const profitDisplay = r.status === 'pending' ? '—' :
+                                     (r.status === 'void' ? '0 ₽' :
+                                     (profit > 0 ? '+' + profit.toFixed(0) + ' ₽' : profit.toFixed(0) + ' ₽'));
+
+                const value = calcValue(r.fair_odd, r.bookmaker_odd);
+                const valueClass = value === null ? 'value-na' : (value > 8 ? 'value-positive' : (value < 3 ? 'value-negative' : 'value-positive'));
+                const valueText = value === null ? '—' : ((value > 0 ? '+' : '') + value.toFixed(1) + '%');
+
+                const fairOdd = r.fair_odd ? r.fair_odd.toFixed(2) : '—';
+
+                // Счёт матча
+                const score = (r.result_goals_h !== null && r.result_goals_a !== null)
+                    ? r.result_goals_h + ':' + r.result_goals_a
+                    : '—';
+
+                return `<tr>
+                    <td style="white-space: nowrap;">${matchDate}</td>
+                    <td class="match-cell"><strong>${r.home_team} — ${r.away_team}</strong><small>${r.league}</small></td>
+                    <td><span style="font-size: 12px;">${r.bet_type}</span><br><span style="font-size: 11px; color: var(--text-gray);">${r.bet_description}</span></td>
+                    <td>${r.bookmaker || '—'}</td>
+                    <td class="odd-col" style="color: var(--success);">${fairOdd}</td>
+                    <td class="odd-col">${r.bookmaker_odd || '—'}</td>
+                    <td class="${valueClass}">${valueText}</td>
+                    <td>${r.stake || '—'} ₽</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="score-cell">${score}</td>
+                    <td class="${profitClass}">${profitDisplay}</td>
+                    <td style="max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${r.notes || ''}">${r.notes || '—'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ==============================
+        // ПАГИНАЦИЯ
+        // ==============================
+        function renderPagination() {
+            const container = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredRecords.length / PAGE_SIZE);
+
+            if (totalPages <= 1) {
+                container.innerHTML = `<span class="info">Всего: ${filteredRecords.length} записей</span>`;
+                return;
+            }
+
+            let html = `<button ${currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">←</button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 7) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+                    } else if (i === currentPage - 2 || i === currentPage + 2) {
+                        html += `<span style="color: var(--text-gray);">...</span>`;
+                    }
+                } else {
+                    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+                }
+            }
+
+            html += `<button ${currentPage >= totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">→</button>`;
+            html += `<span class="info">${filteredRecords.length} записей</span>`;
+
+            container.innerHTML = html;
+        }
+
+        function goPage(page) {
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        // ==============================
+        // ХЕЛПЕРЫ
+        // ==============================
+        function calcValue(fairOdd, bookmakerOdd) {
+            if (!fairOdd || !bookmakerOdd || bookmakerOdd <= 1) return null;
+            return (bookmakerOdd / fairOdd - 1) * 100;
+        }
+
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('bookmakerFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            loadHistory();
+        }
+
+        window.addEventListener('DOMContentLoaded', loadHistory);
+    </script>
+</body>
+</html>
