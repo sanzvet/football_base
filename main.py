@@ -16,6 +16,7 @@ main.py — ОБНОВЛЁННАЯ ВЕРСИЯ с гибридной модел
 3. Для обучения вызовите: POST /api/train_hybrid
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Form, Query, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -36,13 +37,32 @@ from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Football Predictor Pro", version="2.0.0")
+# ============================================
+# LIFESPAN (startup/shutdown) — FIX #1: замена deprecated on_event
+# ============================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan: инициализация при старте, очистка при остановке."""
+    # === STARTUP ===
+    logger.info("Запуск Football Predictor Pro V2...")
+    await init_db()
+    asyncio.create_task(init_ml_models_background())
+    setup_scheduler()
+    logger.info("Приложение готово! Откройте http://127.0.0.1:8000")
+
+    yield  # Приложение работает
+
+    # === SHUTDOWN ===
+    scheduler.shutdown()
+    logger.info("Приложение остановлено")
+
+
+app = FastAPI(title="Football Predictor Pro", version="2.0.0", lifespan=lifespan)
 templates = Jinja2Templates(directory="templates")
 scheduler = AsyncIOScheduler()
 
 # Глобальные переменные для ML-моделей
-football_model: Optional[Any] = None       # FootballModel (V1 — fallback)
-feature_engineer: Optional[Any] = None     # FeatureEngineer (V1)
 hybrid_model: Optional[Any] = None         # HybridModel (V2 — основная)
 feature_engineer_v2: Optional[Any] = None  # FeatureEngineerV2 (V2)
 
@@ -54,26 +74,9 @@ parser_running = False
 # ============================================
 
 async def init_ml_models(pool):
-    """Инициализировать ML-модели при старте приложения"""
-    global football_model, feature_engineer
+    """Инициализировать ML-модель V2 при старте приложения"""
     global hybrid_model, feature_engineer_v2
 
-    # === V1: Старая модель (fallback) ===
-    try:
-        from ml.features import FeatureEngineer
-        from ml.model import FootballModel
-
-        feature_engineer = FeatureEngineer(pool)
-        football_model = FootballModel(model_path="ml/ml_model.pkl")
-
-        if football_model.load():
-            logger.info("V1: ML-модель загружена (fallback)")
-        else:
-            logger.info("V1: ML-модель не найдена")
-    except Exception as e:
-        logger.warning(f"V1: Ошибка инициализации: {e}")
-
-    # === V2: Гибридная модель (основная) ===
     try:
         from ml.features_v2 import FeatureEngineerV2
         from ml.hybrid_model import HybridModel
@@ -181,7 +184,7 @@ async def get_prediction(
         if not home_team or not away_team:
             raise HTTPException(status_code=404, detail="Команда не найдена")
 
-    # === ПЫТАЕМСЯ ГИБРИДНУЮ МОДЕЛЬ (V2) ===
+    # === ГИБРИДНАЯ МОДЕЛЬ (V2) ===
     if hybrid_model and hybrid_model.is_trained and feature_engineer_v2:
         try:
             features = await feature_engineer_v2.get_prediction_features(
@@ -198,27 +201,7 @@ async def get_prediction(
             }
 
         except Exception as e:
-            logger.error(f"V2 ошибка прогноза: {e}, fallback на V1")
-
-    # === FALLBACK: СТАРАЯ МОДЕЛЬ (V1) ===
-    if football_model and football_model.is_trained and feature_engineer:
-        try:
-            features = await feature_engineer.get_prediction_features(
-                home_team_id=home_id,
-                away_team_id=away_id,
-                league=league
-            )
-            prediction = football_model.predict(features)
-
-            return {
-                "home_team": home_team['team_name'],
-                "away_team": away_team['team_name'],
-                "model_status": "v1_fallback",
-                **prediction
-            }
-
-        except Exception as e:
-            logger.error(f"V1 ошибка прогноза: {e}")
+            logger.error(f"V2 ошибка прогноза: {e}")
 
     # === MOCK DATA (если нет моделей) ===
     logger.warning("Модели не обучены — возвращаем тестовые данные")
@@ -821,13 +804,11 @@ async def health_check():
             db_status = "error"
 
     v2_status = "loaded" if hybrid_model and hybrid_model.is_trained else "not_loaded"
-    v1_status = "loaded" if football_model and football_model.is_trained else "not_loaded"
 
     return {
         "status": "healthy",
         "database": db_status,
         "ml_model_v2": v2_status,
-        "ml_model_v1": v1_status,
         "timestamp": datetime.now().isoformat()
     }
 
@@ -887,33 +868,6 @@ def setup_scheduler():
 
 
 # ============================================
-# STARTUP / SHUTDOWN
-# ============================================
-
-@app.on_event("startup")
-async def startup_event():
-    """Инициализация при запуске приложения"""
-    logger.info("Запуск Football Predictor Pro V2...")
-    await init_db()
-    asyncio.create_task(init_ml_models_background())
-    setup_scheduler()
-    logger.info("Приложение готово! Откройте http://127.0.0.1:8000")
-
-
-async def init_ml_models_background():
-    pool = await get_pool()
-    if pool:
-        await init_ml_models(pool)
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Очистка при остановке приложения"""
-    scheduler.shutdown()
-    logger.info("Приложение остановлено")
-
-
-# ============================================
 # MAIN ENTRY POINT
 # ============================================
 
@@ -925,3 +879,10 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+
+
+async def init_ml_models_background():
+    """Фоновая задача: инициализация ML моделей после старта."""
+    pool = await get_pool()
+    if pool:
+        await init_ml_models(pool)
